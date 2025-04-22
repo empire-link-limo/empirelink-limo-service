@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_sections_form_sections",
+  "info": {
+    "displayName": "Form Section"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "successMessage": {
+      "type": "text"
+    },
+    "notificationEmail": {
+      "type": "email"
+    }
+  }
+}

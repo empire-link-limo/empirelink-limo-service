@@ -1,0 +1,42 @@
+{
+  "kind": "singleType",
+  "collectionName": "seo_settings",
+  "info": {
+    "singularName": "seo-setting",
+    "pluralName": "seo-settings",
+    "displayName": "SEO Setting"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "defaultTitle": {
+      "type": "string",
+      "required": true
+    },
+    "defaultDescription": {
+      "type": "text",
+      "required": true
+    },
+    "defaultImage": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
+    },
+    "siteUrl": {
+      "type": "text",
+      "required": true
+    },
+    "googleAnalyticsId": {
+      "type": "string"
+    },
+    "robotsTxt": {
+      "type": "text"
+    }
+  }
+}

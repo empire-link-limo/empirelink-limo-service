@@ -1,0 +1,35 @@
+{
+  "kind": "singleType",
+  "collectionName": "services_pages",
+  "info": {
+    "singularName": "services-page",
+    "pluralName": "services-pages",
+    "displayName": "Services Page",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "HeroSection": {
+      "type": "component",
+      "repeatable": false,
+      "component": "sections.other-hero-section"
+    },
+    "WhyChooseUsSection": {
+      "type": "component",
+      "repeatable": false,
+      "component": "sections.why-choose-us-section"
+    },
+    "CTASection": {
+      "type": "component",
+      "repeatable": false,
+      "component": "sections.cta-section"
+    },
+    "SEO": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.seo"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_sections_fleet_settings",
+  "info": {
+    "displayName": "Fleet Settings"
+  },
+  "options": {},
+  "attributes": {
+    "showFilters": {
+      "type": "boolean",
+      "default": true
+    },
+    "filterByCapacity": {
+      "type": "boolean",
+      "default": true
+    },
+    "filterByFeatures": {
+      "type": "boolean",
+      "default": true
+    },
+    "featuredVehicles": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::vehicle.vehicle"
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "kind": "singleType",
+  "collectionName": "about_pages",
+  "info": {
+    "singularName": "about-page",
+    "pluralName": "about-pages",
+    "displayName": "About Page"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "HeroSection": {
+      "type": "component",
+      "repeatable": false,
+      "component": "sections.other-hero-section"
+    },
+    "StorySection": {
+      "type": "component",
+      "repeatable": false,
+      "component": "sections.story-section"
+    },
+    "ValuesSection": {
+      "type": "component",
+      "repeatable": false,
+      "component": "sections.values-section"
+    },
+    "TeamSection": {
+      "type": "component",
+      "repeatable": false,
+      "component": "sections.team-section"
+    },
+    "CTASection": {
+      "type": "component",
+      "repeatable": false,
+      "component": "sections.cta-section"
+    },
+    "SEO": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.seo"
+    }
+  }
+}

@@ -19,11 +19,17 @@
       "targetField": "name",
       "required": true
     },
-    "blog_posts": {
+    "blog_post": {
       "type": "relation",
-      "relation": "oneToMany",
+      "relation": "manyToOne",
       "target": "api::blog-post.blog-post",
-      "mappedBy": "category"
+      "inversedBy": "categories"
+    },
+    "gallery_images": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::gallery-image.gallery-image",
+      "mappedBy": "categories"
     }
   }
 }

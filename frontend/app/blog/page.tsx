@@ -1,132 +1,224 @@
 // app/blog/page.tsx
-import Link from "next/link";
-import { getBlogPosts, getBlogCategories, getSiteSettings } from '@/lib/api';
-import StrapiMedia from '@/components/strapi-image';
-import SEO from '@/components/seo';
-import { Calendar, User, Tag, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+"use client"
 
-// Types definition
-interface Category {
-  id: number;
-  name: string;
-  slug: string;
+import { useState, useEffect } from "react"
+import Image from "next/image"
+import Link from "next/link"
+import { motion } from "framer-motion"
+import { Calendar, User, Tag, ChevronRight } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { getBlogPage, getAllPosts, getCategories } from "@/lib/strapi"
+import { getStrapiMedia } from "@/lib/api"
+import Seo from "@/components/seo"
+
+// Define TypeScript interfaces for Strapi data
+interface StrapiImage {
+  data?: {
+    id: number;
+    attributes: {
+      url: string;
+      width?: number;
+      height?: number;
+      alternativeText?: string;
+    };
+  } | null;
 }
 
-interface BlogPost {
-  id: number;
+interface HeroSection {
   title: string;
-  excerpt: string;
-  slug: string;
-  publishDate: string;
-  author: string;
-  featured: boolean;
-  featuredImage: {
-    data: any;
-  };
-  category: Category;
+  description: string;
+  backgroundImage?: StrapiImage;
 }
 
-export const revalidate = 3600; // Revalidate this page every hour
+interface SEO {
+  metaTitle?: string;
+  metaDescription?: string;
+  metaImage?: StrapiImage;
+}
 
-// This would need to be a Client Component for filtering/search
-// For SSR, we're using URL params for initial filtering
-export default async function BlogPage({ 
-  searchParams 
-}: { 
-  searchParams: { category?: string; page?: string } 
-}) {
-  // Get query parameters
-  const page = Number(searchParams?.page) || 1;
-  const category = searchParams?.category || null;
+interface BlogPageData {
+  id: number;
+  attributes: {
+    hero?: HeroSection;
+    seo?: SEO;
+  };
+}
+
+interface CategoryData {
+  id: number;
+  attributes: {
+    name: string;
+    slug: string;
+  };
+}
+
+export interface BlogPostData {
+  id: number;
+  attributes: {
+    title: string;
+    slug: string;
+    excerpt: string;
+    content: string;
+    Published: string; // Using "Published" instead of "publishedAt"
+    author: string;
+    featured: boolean;
+    image?: StrapiImage;
+    category?: {
+      data: CategoryData | null;
+    };
+    seo?: SEO;
+  };
+}
+
+export interface BlogPostsResponse {
+  data: BlogPostData[];
+  meta: {
+    pagination: {
+      page: number;
+      pageSize: number;
+      pageCount: number;
+      total: number;
+    };
+  };
+}
+
+export default function BlogPage() {
+  const [blogPage, setBlogPage] = useState<BlogPageData | null>(null)
+  const [posts, setPosts] = useState<BlogPostData[]>([])
+  const [categories, setCategories] = useState<string[]>(["All"])
+  const [selectedCategory, setSelectedCategory] = useState("All")
+  const [searchQuery, setSearchQuery] = useState("")
   
-  // Fetch data from Strapi
-  const { posts, pagination } = await getBlogPosts({
-    page,
-    pageSize: 9,
-    category,
-  });
-  const categories = await getBlogCategories();
-  const siteSettings = await getSiteSettings();
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const blogPageData = await getBlogPage() as BlogPageData
+        const postsData = await getAllPosts(100) as BlogPostsResponse
+        const categoriesData = await getCategories() as CategoryData[]
+        
+        setBlogPage(blogPageData)
+        setPosts(postsData.data)
+        
+        const categoryOptions = categoriesData.map((category: CategoryData) => category.attributes.name)
+        setCategories(["All", ...categoryOptions])
+      } catch (error) {
+        console.error("Error fetching blog page data:", error)
+      }
+    }
+    
+    fetchData()
+  }, [])
   
-  // Find featured post
-  const featuredPost = posts.find((post: BlogPost) => post.featured);
+  // Default values if data is still loading
+  const heroData = blogPage?.attributes?.hero || {
+    title: "Our Blog",
+    description: "Insights and updates from the world of luxury corporate transportation",
+    backgroundImage: null
+  }
+  
+  // Get image URL
+  const heroImageUrl = heroData?.backgroundImage?.data ? 
+    getStrapiMedia(heroData.backgroundImage) : 
+    "/placeholder.svg?height=800&width=1600"
+  
+  // Filter posts
+  const filteredPosts = posts.filter((post) => {
+    const postData = post.attributes
+    const categoryName = postData.category?.data?.attributes?.name
+    
+    const matchesCategory = selectedCategory === "All" || categoryName === selectedCategory
+    const matchesSearch =
+      postData.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      postData.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
+      
+    return matchesCategory && matchesSearch
+  })
+  
+  // Get featured post
+  const featuredPost = posts.find((post) => post.attributes.featured)
 
   return (
     <div className="pt-20">
-      {/* Add SEO */}
-      <SEO 
-        seo={{ 
-          metaTitle: "Blog | Empire Link Limo",
-          metaDescription: "Insights and updates from the world of luxury corporate transportation."
-        }} 
-        defaultSeo={siteSettings.defaultSeo} 
-      />
-
+      {/* SEO */}
+      {blogPage?.attributes?.seo && (
+        <Seo seo={{
+          metaTitle: blogPage.attributes.seo.metaTitle || "Blog | Empirelink Limo Service",
+          metaDescription: blogPage.attributes.seo.metaDescription,
+          shareImage: blogPage.attributes.seo.metaImage,
+        }} />
+      )}
+      
       {/* Hero Section */}
       <section className="relative">
         <div className="absolute inset-0 z-0">
-          <StrapiMedia
-            data={{url: "/placeholder.svg?height=800&width=1600"}}
-            fill
-            className="object-cover brightness-50"
-          />
+          <Image src={heroImageUrl} alt="Blog" fill className="object-cover brightness-50" />
         </div>
         <div className="container mx-auto px-4 py-20 md:py-32 relative z-10">
-          <div className="max-w-3xl">
-            <h1 className="text-3xl md:text-5xl font-bold mb-6">Our Blog</h1>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="max-w-3xl"
+          >
+            <h1 className="text-3xl md:text-5xl font-bold mb-6">{heroData.title}</h1>
             <div className="h-1 w-20 bg-gold mb-6"></div>
             <p className="text-xl text-gray-300 mb-8">
-              Insights and updates from the world of luxury corporate transportation
+              {heroData.description}
             </p>
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Blog Content */}
       <section className="py-20 bg-black">
         <div className="container mx-auto px-4">
-          {/* Categories filter - this part would need a client component wrapper for live filtering */}
+          {/* Search and Filter */}
           <div className="mb-12">
-            <div className="flex flex-wrap gap-2 justify-center">
-              <Link href="/blog" passHref>
-                <Button
-                  variant={!category ? "default" : "outline"}
-                  className={
-                    !category
-                      ? "bg-gold hover:bg-gold-light text-black"
-                      : "border-gray-700 hover:bg-gray-800"
-                  }
-                >
-                  All
-                </Button>
-              </Link>
-              {categories.map((cat: Category) => (
-                <Link key={cat.id} href={`/blog?category=${cat.slug}`} passHref>
+            <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
+              <div className="w-full md:w-1/3">
+                <Input
+                  placeholder="Search articles..."
+                  className="bg-gray-900 border-gray-800"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {categories.map((category) => (
                   <Button
-                    variant={category === cat.slug ? "default" : "outline"}
+                    key={category}
+                    variant={selectedCategory === category ? "default" : "outline"}
                     className={
-                      category === cat.slug
+                      selectedCategory === category
                         ? "bg-gold hover:bg-gold-light text-black"
                         : "border-gray-700 hover:bg-gray-800"
                     }
+                    onClick={() => setSelectedCategory(category)}
                   >
-                    {cat.name}
+                    {category}
                   </Button>
-                </Link>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
 
           {/* Featured Post */}
-          {featuredPost && !category && (
-            <div className="mb-16">
+          {featuredPost && selectedCategory === "All" && searchQuery === "" && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="mb-16"
+            >
               <div className="bg-gray-900 rounded-lg overflow-hidden border border-gray-800">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="relative h-64 md:h-auto">
-                    <StrapiMedia
-                      data={featuredPost.featuredImage?.data}
+                    <Image
+                      src={featuredPost.attributes.image?.data ? 
+                        getStrapiMedia(featuredPost.attributes.image) : 
+                        "/placeholder.svg?height=600&width=800"}
+                      alt={featuredPost.attributes.title}
                       fill
                       className="object-cover"
                     />
@@ -135,122 +227,99 @@ export default async function BlogPage({
                     <div className="mb-2">
                       <span className="bg-gold/20 text-gold px-3 py-1 rounded-full text-sm">Featured</span>
                     </div>
-                    <h2 className="text-2xl md:text-3xl font-bold mb-4">{featuredPost.title}</h2>
-                    <p className="text-gray-300 mb-6">{featuredPost.excerpt}</p>
+                    <h2 className="text-2xl md:text-3xl font-bold mb-4">{featuredPost.attributes.title}</h2>
+                    <p className="text-gray-300 mb-6">{featuredPost.attributes.excerpt}</p>
                     <div className="flex items-center text-gray-400 text-sm mb-6">
                       <div className="flex items-center mr-4">
                         <Calendar className="h-4 w-4 mr-1" />
-                        <span>{new Date(featuredPost.publishDate).toLocaleDateString('en-US', { 
-                          year: 'numeric', 
-                          month: 'long', 
-                          day: 'numeric' 
+                        <span>{new Date(featuredPost.attributes.Published).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
                         })}</span>
                       </div>
                       <div className="flex items-center mr-4">
                         <User className="h-4 w-4 mr-1" />
-                        <span>{featuredPost.author}</span>
+                        <span>{featuredPost.attributes.author || "Admin"}</span>
                       </div>
                       <div className="flex items-center">
                         <Tag className="h-4 w-4 mr-1" />
-                        <span>{featuredPost.category?.name}</span>
+                        <span>{featuredPost.attributes.category?.data?.attributes?.name || "Uncategorized"}</span>
                       </div>
                     </div>
                     <Button asChild className="mt-auto bg-gold hover:bg-gold-light text-black self-start">
-                      <Link href={`/blog/${featuredPost.slug}`}>
+                      <Link href={`/blog/${featuredPost.attributes.slug}`}>
                         Read More <ChevronRight className="h-4 w-4 ml-1" />
                       </Link>
                     </Button>
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           )}
 
           {/* Blog Posts Grid */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {posts
-              .filter((post: BlogPost) => !post.featured || category)
-              .map((post: BlogPost) => (
-                <div
+            {filteredPosts.length > 0 ? filteredPosts.map((post, index) => {
+              const postData = post.attributes
+              const imageUrl = postData.image?.data ? 
+                getStrapiMedia(postData.image) : 
+                "/placeholder.svg?height=600&width=800"
+              
+              return (
+                <motion.div
                   key={post.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
                   className="bg-gray-900 rounded-lg overflow-hidden border border-gray-800"
                 >
                   <div className="relative h-48">
-                    <StrapiMedia
-                      data={post.featuredImage?.data}
-                      fill
-                      className="object-cover"
-                    />
+                    <Image src={imageUrl} alt={postData.title} fill className="object-cover" />
                   </div>
                   <div className="p-6">
                     <div className="flex items-center text-gray-400 text-xs mb-3">
                       <div className="flex items-center mr-3">
                         <Calendar className="h-3 w-3 mr-1" />
-                        <span>{new Date(post.publishDate).toLocaleDateString('en-US', { 
-                          year: 'numeric', 
-                          month: 'long', 
-                          day: 'numeric' 
+                        <span>{new Date(postData.Published).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
                         })}</span>
                       </div>
                       <div className="flex items-center">
                         <Tag className="h-3 w-3 mr-1" />
-                        <span>{post.category?.name}</span>
+                        <span>{postData.category?.data?.attributes?.name || "Uncategorized"}</span>
                       </div>
                     </div>
-                    <h3 className="text-xl font-bold mb-3">{post.title}</h3>
-                    <p className="text-gray-300 mb-4 line-clamp-3">{post.excerpt}</p>
+                    <h3 className="text-xl font-bold mb-3">{postData.title}</h3>
+                    <p className="text-gray-300 mb-4 line-clamp-3">{postData.excerpt}</p>
                     <div className="flex items-center text-gray-400 text-sm mb-4">
                       <User className="h-4 w-4 mr-1" />
-                      <span>{post.author}</span>
+                      <span>{postData.author || "Admin"}</span>
                     </div>
                     <Button asChild variant="outline" className="w-full border-gold text-gold hover:bg-gold/10">
-                      <Link href={`/blog/${post.slug}`}>Read Article</Link>
+                      <Link href={`/blog/${postData.slug}`}>Read Article</Link>
                     </Button>
                   </div>
-                </div>
-              ))}
+                </motion.div>
+              )
+            }) : <></>}
           </div>
 
-          {/* Pagination */}
-          {pagination && pagination.pageCount > 1 && (
-            <div className="flex justify-center mt-12">
-              <div className="flex gap-2">
-                {Array.from({ length: pagination.pageCount }).map((_, i) => (
-                  <Link 
-                    key={i} 
-                    href={`/blog?page=${i + 1}${category ? `&category=${category}` : ''}`}
-                    passHref
-                  >
-                    <Button
-                      variant={pagination.page === i + 1 ? "default" : "outline"}
-                      className={
-                        pagination.page === i + 1
-                          ? "bg-gold hover:bg-gold-light text-black"
-                          : "border-gray-700 hover:bg-gray-800"
-                      }
-                    >
-                      {i + 1}
-                    </Button>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* No Posts Message */}
-          {posts.length === 0 && (
+          {/* No Results */}
+          {filteredPosts.length === 0 && (
             <div className="text-center py-12">
               <h3 className="text-xl font-bold mb-2">No articles found</h3>
-              <p className="text-gray-400 mb-6">
-                {category 
-                  ? `No posts found in the "${categories.find(c => c.slug === category)?.name || category}" category.` 
-                  : 'No posts found.'}
-              </p>
+              <p className="text-gray-400 mb-6">Try adjusting your search or filter to find what you're looking for.</p>
               <Button
-                asChild
+                onClick={() => {
+                  setSelectedCategory("All")
+                  setSearchQuery("")
+                }}
                 className="bg-gold hover:bg-gold-light text-black"
               >
-                <Link href="/blog">View All Posts</Link>
+                Reset Filters
               </Button>
             </div>
           )}
@@ -265,9 +334,8 @@ export default async function BlogPage({
               <div>
                 <h2 className="text-2xl md:text-3xl font-bold mb-4">Subscribe to Our Newsletter</h2>
                 <p className="text-gray-300 mb-6">
-                  Stay updated with the latest insights, industry news, and exclusive offers from Empire Link Limo.
+                  Stay updated with the latest insights, industry news, and exclusive offers from Luxury Limo.
                 </p>
-                {/* Newsletter form would need a client component wrapper */}
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Input placeholder="Your email address" className="bg-gray-800 border-gray-700" />
                   <Button className="bg-gold hover:bg-gold-light text-black">Subscribe</Button>
@@ -275,16 +343,12 @@ export default async function BlogPage({
                 <p className="text-gray-400 text-sm mt-3">We respect your privacy. Unsubscribe at any time.</p>
               </div>
               <div className="relative h-64 rounded-lg overflow-hidden">
-                <StrapiMedia
-                  data={{url: "/placeholder.svg?height=600&width=800"}}
-                  fill
-                  className="object-cover"
-                />
+                <Image src="/placeholder.svg?height=600&width=800" alt="Newsletter" fill className="object-cover" />
               </div>
             </div>
           </div>
         </div>
       </section>
     </div>
-  );
+  )
 }

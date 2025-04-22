@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_sections_why_choose_us_sections",
+  "info": {
+    "displayName": "Why Choose Us Section"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "benefit": {
+      "displayName": "benefits",
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.benefits"
+    }
+  }
+}

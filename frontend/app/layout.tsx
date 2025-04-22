@@ -1,11 +1,10 @@
-// app/layout.tsx
-import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
-import "./globals.css";
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
-import { ThemeProvider } from "@/components/theme-provider";
-import { getSiteSettings } from "@/lib/api";
+import type React from "react"
+import type { Metadata } from "next"
+import { Playfair_Display, Inter } from "next/font/google";
+import "./globals.css"
+import { Header } from "@/components/header"
+import { Footer } from "@/components/footer"
+import { ThemeProvider } from "@/components/theme-provider"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -18,30 +17,27 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Empire Link Limo | Corporate Transportation",
+  title: "Luxury Limo Service | Corporate Transportation",
   description:
     "Premium limousine and chauffeur services for corporate clients. Experience luxury, reliability, and professionalism.",
-};
+}
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
-  // Fetch site settings for header and footer
-  const siteSettings = await getSiteSettings();
-
+}: Readonly<{
+  children: React.ReactNode
+}>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${playfair.variable} font-sans bg-black text-gray-100`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
           <div className="flex min-h-screen flex-col">
-            <Header siteSettings={siteSettings} />
+            <Header />
             <main className="flex-1">{children}</main>
-            <Footer siteSettings={siteSettings} />
+            <Footer />
           </div>
         </ThemeProvider>
       </body>
     </html>
-  );
+  )
 }

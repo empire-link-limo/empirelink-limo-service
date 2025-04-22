@@ -14,45 +14,41 @@
       "type": "string",
       "required": true
     },
-    "content": {
-      "type": "richtext",
-      "required": true
-    },
-    "excerpt": {
-      "type": "text",
-      "required": true
-    },
-    "featuredImage": {
-      "allowedTypes": [
-        "images",
-        "files"
-      ],
-      "type": "media",
-      "multiple": false,
-      "required": true
-    },
     "slug": {
       "type": "uid",
-      "targetField": "title",
-      "required": true
+      "targetField": "title"
+    },
+    "excerpt": {
+      "type": "text"
+    },
+    "content": {
+      "type": "richtext"
+    },
+    "published": {
+      "type": "date"
     },
     "author": {
-      "type": "string",
-      "required": true
+      "type": "string"
     },
-    "category": {
+    "categories": {
       "type": "relation",
-      "relation": "manyToOne",
+      "relation": "oneToMany",
       "target": "api::category.category",
-      "inversedBy": "blog_posts"
+      "mappedBy": "blog_post"
+    },
+    "image": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
     },
     "featured": {
       "type": "boolean",
       "default": false
-    },
-    "publishDate": {
-      "type": "date",
-      "required": true
     },
     "seo": {
       "type": "component",

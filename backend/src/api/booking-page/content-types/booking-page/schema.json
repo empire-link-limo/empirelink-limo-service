@@ -1,0 +1,35 @@
+{
+  "kind": "singleType",
+  "collectionName": "booking_pages",
+  "info": {
+    "singularName": "booking-page",
+    "pluralName": "booking-pages",
+    "displayName": "Booking Page",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "bookingIframeURL": {
+      "type": "text"
+    },
+    "ContactInfo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "sections.contact-info"
+    },
+    "SEO": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.seo"
+    }
+  }
+}

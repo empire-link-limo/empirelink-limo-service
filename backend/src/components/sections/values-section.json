@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_sections_values_sections",
+  "info": {
+    "displayName": "Values Section"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "icon": {
+      "type": "string"
+    }
+  }
+}

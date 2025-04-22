@@ -1,5 +1,5 @@
 {
-  "kind": "collectionType",
+  "kind": "singleType",
   "collectionName": "homepages",
   "info": {
     "singularName": "homepage",
@@ -10,44 +10,30 @@
     "draftAndPublish": true
   },
   "attributes": {
-    "heroTitle": {
-      "type": "text",
-      "required": true
-    },
-    "heroSubtitle": {
-      "type": "text",
-      "required": true
-    },
-    "heroBackground": {
-      "allowedTypes": [
-        "images",
-        "files"
-      ],
-      "type": "media",
-      "multiple": false,
-      "required": true
-    },
-    "ctaTitle": {
-      "type": "string",
-      "required": true
-    },
-    "ctaText": {
-      "type": "text",
-      "required": true
-    },
-    "ctaBackground": {
-      "allowedTypes": [
-        "images",
-        "files"
-      ],
-      "type": "media",
-      "multiple": false,
-      "required": true
-    },
-    "seo": {
+    "HeroSection": {
       "type": "component",
-      "repeatable": true,
-      "component": "shared.seo"
+      "repeatable": false,
+      "component": "sections.hero-section"
+    },
+    "FleetSection": {
+      "type": "component",
+      "repeatable": false,
+      "component": "sections.fleet-section"
+    },
+    "ServicesSection": {
+      "type": "component",
+      "repeatable": false,
+      "component": "sections.services-section"
+    },
+    "TestimonialsSection": {
+      "type": "component",
+      "repeatable": false,
+      "component": "sections.testimonials-section"
+    },
+    "CTASection": {
+      "type": "component",
+      "repeatable": false,
+      "component": "sections.cta-section"
     }
   }
 }

@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_sections_gallery_settings",
+  "info": {
+    "displayName": "Gallery Settings"
+  },
+  "options": {},
+  "attributes": {
+    "showCategories": {
+      "type": "boolean",
+      "default": true,
+      "required": true
+    },
+    "enableLightbox": {
+      "type": "boolean",
+      "default": true
+    },
+    "imagesPerRow": {
+      "type": "integer",
+      "default": 3
+    },
+    "maxImages": {
+      "type": "integer"
+    }
+  }
+}

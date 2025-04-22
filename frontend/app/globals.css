@@ -43,21 +43,13 @@
   body {
     @apply bg-[hsl(var(--background))] text-[hsl(var(--foreground))];
   }
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply font-["var(--font-playfair)"];
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-playfair);
   }
 }
 
 .gold-gradient {
-  background: linear-gradient(90deg, 
-    #d4af37 0%, 
-    #f2d57e 50%, 
-    #d4af37 100%);
+  background: linear-gradient(90deg, #d4af37 0%, #f2d57e 50%, #d4af37 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_sections_blog_settings",
+  "info": {
+    "displayName": "Blog Settings"
+  },
+  "options": {},
+  "attributes": {
+    "postsPerPage": {
+      "type": "integer",
+      "default": 9
+    },
+    "showFeaturedPost": {
+      "type": "boolean",
+      "default": true
+    },
+    "enableSearchAndFilters": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

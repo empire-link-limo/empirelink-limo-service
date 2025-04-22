@@ -1,0 +1,32 @@
+{
+  "collectionName": "components_sections_newsletter_sections",
+  "info": {
+    "displayName": "Newsletter Section"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "buttonText": {
+      "type": "string"
+    },
+    "image": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
+    },
+    "mailchimpEndpoint": {
+      "type": "text"
+    }
+  }
+}

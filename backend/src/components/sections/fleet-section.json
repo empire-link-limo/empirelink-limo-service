@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_sections_fleet_sections",
+  "info": {
+    "displayName": "Fleet Section"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    }
+  }
+}

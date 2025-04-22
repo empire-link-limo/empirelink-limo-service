@@ -15,21 +15,20 @@
       "required": true
     },
     "position": {
-      "type": "string",
-      "required": true
-    },
-    "bio": {
-      "type": "text",
-      "required": true
+      "type": "string"
     },
     "image": {
       "allowedTypes": [
         "images",
-        "files"
+        "files",
+        "videos",
+        "audios"
       ],
       "type": "media",
-      "multiple": false,
-      "required": true
+      "multiple": false
+    },
+    "bio": {
+      "type": "richtext"
     }
   }
 }

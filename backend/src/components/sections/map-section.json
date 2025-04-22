@@ -1,0 +1,28 @@
+{
+  "collectionName": "components_sections_map_sections",
+  "info": {
+    "displayName": "Map Section"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "mapEmbedCode": {
+      "type": "text"
+    },
+    "locationName": {
+      "type": "text"
+    },
+    "buttonText": {
+      "type": "string"
+    },
+    "buttonUrl": {
+      "type": "text"
+    }
+  }
+}

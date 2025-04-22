@@ -11,16 +11,21 @@
     "metaDescription": {
       "type": "text"
     },
-    "metaKeywords": {
-      "type": "string"
-    },
     "metaImage": {
       "allowedTypes": [
         "images",
-        "files"
+        "files",
+        "videos",
+        "audios"
       ],
       "type": "media",
-      "multiple": true
+      "multiple": false
+    },
+    "metaRobots": {
+      "type": "text"
+    },
+    "keywords": {
+      "type": "text"
     }
   }
 }

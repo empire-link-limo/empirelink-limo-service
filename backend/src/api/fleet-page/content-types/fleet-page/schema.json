@@ -1,0 +1,29 @@
+{
+  "kind": "singleType",
+  "collectionName": "fleet_pages",
+  "info": {
+    "singularName": "fleet-page",
+    "pluralName": "fleet-pages",
+    "displayName": "Fleet Page"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "HeroSection": {
+      "type": "component",
+      "repeatable": false,
+      "component": "sections.other-hero-section"
+    },
+    "FleetSettings": {
+      "type": "component",
+      "repeatable": false,
+      "component": "sections.fleet-settings"
+    },
+    "SEO": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.seo"
+    }
+  }
+}

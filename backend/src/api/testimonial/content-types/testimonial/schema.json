@@ -15,8 +15,7 @@
       "required": true
     },
     "company": {
-      "type": "string",
-      "required": true
+      "type": "string"
     },
     "quote": {
       "type": "text",
@@ -25,11 +24,17 @@
     "image": {
       "allowedTypes": [
         "images",
-        "files"
+        "files",
+        "videos",
+        "audios"
       ],
       "type": "media",
       "multiple": false,
       "required": true
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
     }
   }
 }
