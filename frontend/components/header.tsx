@@ -1,4 +1,3 @@
-// components/header.tsx
 "use client"
 
 import { useState, useEffect } from "react"
@@ -8,26 +7,7 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
 
-// Define interface for the global props
-interface SocialLink {
-  platform: string;
-  url: string;
-}
-
-interface GlobalData {
-  attributes?: {
-    companyName?: string;
-    phone?: string;
-    email?: string;
-    address?: string;
-    officeHours?: string;
-    socialLinks?: SocialLink[];
-    footerText?: string;
-  };
-}
-
-// Update the Header component with type annotation
-export function Header({ global }: { global?: GlobalData }) {
+export function Header() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
@@ -46,6 +26,7 @@ export function Header({ global }: { global?: GlobalData }) {
     { href: "/about", label: "About" },
     { href: "/fleet", label: "Fleet" },
     { href: "/services", label: "Services" },
+    { href: "/gallery", label: "Gallery" },
     { href: "/blog", label: "Blog" },
     { href: "/contact", label: "Contact" },
   ]
@@ -60,7 +41,7 @@ export function Header({ global }: { global?: GlobalData }) {
       <div className="container mx-auto px-4 flex justify-between items-center">
         <Link href="/" className="flex items-center">
           <h1 className="text-2xl font-playfair font-bold">
-            <span className="gold-gradient">{global?.attributes?.companyName || "Empire Link"}</span> Limo
+            <span className="gold-gradient">Empire Link</span> Limo
           </h1>
         </Link>
 
@@ -75,7 +56,7 @@ export function Header({ global }: { global?: GlobalData }) {
             <Link href="/booking">Book Now</Link>
           </Button>
           <Button asChild className="bg-gold hover:bg-gold-light text-black">
-            <a href={`tel:${global?.attributes?.phone || "+1234567890"}`} className="flex items-center gap-2">
+            <a href="tel:+1234567890" className="flex items-center gap-2">
               <Phone size={16} />
               <span className="hidden lg:inline">Call Us</span>
             </a>
@@ -116,7 +97,7 @@ export function Header({ global }: { global?: GlobalData }) {
                   </Link>
                 </Button>
                 <Button asChild className="bg-gold hover:bg-gold-light text-black w-full">
-                  <a href={`tel:${global?.attributes?.phone || "+1234567890"}`} className="flex items-center justify-center gap-2">
+                  <a href="tel:+1234567890" className="flex items-center justify-center gap-2">
                     <Phone size={16} />
                     <span>Call Us</span>
                   </a>

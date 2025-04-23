@@ -1,113 +1,135 @@
-// app/gallery/page.tsx
 "use client"
 
-import { useState, useEffect } from "react"
+import type React from "react"
+
+import { useState } from "react"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import { X, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { getGalleryPage, getGalleryImages, getCategories } from "@/lib/strapi"
-import { getStrapiMedia } from "@/lib/api"
-import Seo from "@/components/seo"
 
-// Define TypeScript interfaces for Strapi data
-interface StrapiImage {
-  data?: {
-    id: number;
-    attributes: {
-      url: string;
-      width?: number;
-      height?: number;
-      alternativeText?: string;
-    };
-  } | null;
-}
+// Gallery categories
+const categories = ["All", "Vehicles", "Events", "Interiors", "Chauffeurs", "Corporate"]
 
-interface HeroSection {
-  title: string;
-  description: string;
-  backgroundImage?: StrapiImage;
-}
-
-interface SEO {
-  metaTitle?: string;
-  metaDescription?: string;
-  metaImage?: StrapiImage;
-}
-
-interface GalleryPageData {
-  id: number;
-  attributes: {
-    hero?: HeroSection;
-    seo?: SEO;
-  };
-}
-
-interface CategoryData {
-  id: number;
-  attributes: {
-    name: string;
-    slug: string;
-  };
-}
-
-interface GalleryImageData {
-  id: number;
-  attributes: {
-    title: string;
-    description?: string;
-    image?: StrapiImage;
-    category?: {
-      data: CategoryData | null;
-    };
-  };
-}
+// Gallery images with metadata
+const galleryImages = [
+  {
+    id: 1,
+    src: "/placeholder.svg?height=800&width=1200",
+    alt: "Mercedes-Benz S-Class exterior",
+    category: "Vehicles",
+    description: "Mercedes-Benz S-Class - Our flagship luxury sedan",
+  },
+  {
+    id: 2,
+    src: "/placeholder.svg?height=800&width=1200",
+    alt: "Cadillac Escalade exterior",
+    category: "Vehicles",
+    description: "Cadillac Escalade - Spacious luxury SUV",
+  },
+  {
+    id: 3,
+    src: "/placeholder.svg?height=800&width=1200",
+    alt: "Lincoln Continental exterior",
+    category: "Vehicles",
+    description: "Lincoln Continental - Classic American luxury",
+  },
+  {
+    id: 4,
+    src: "/placeholder.svg?height=800&width=1200",
+    alt: "Mercedes-Benz Sprinter interior",
+    category: "Interiors",
+    description: "Mercedes-Benz Sprinter - Executive conference seating",
+  },
+  {
+    id: 5,
+    src: "/placeholder.svg?height=800&width=1200",
+    alt: "S-Class interior detail",
+    category: "Interiors",
+    description: "S-Class interior - Premium leather and ambient lighting",
+  },
+  {
+    id: 6,
+    src: "/placeholder.svg?height=800&width=1200",
+    alt: "Corporate event transportation",
+    category: "Events",
+    description: "Corporate event transportation service",
+  },
+  {
+    id: 7,
+    src: "/placeholder.svg?height=800&width=1200",
+    alt: "Professional chauffeur",
+    category: "Chauffeurs",
+    description: "Our professional chauffeurs are trained to provide exceptional service",
+  },
+  {
+    id: 8,
+    src: "/placeholder.svg?height=800&width=1200",
+    alt: "Airport transfer service",
+    category: "Corporate",
+    description: "Executive airport transfer service",
+  },
+  {
+    id: 9,
+    src: "/placeholder.svg?height=800&width=1200",
+    alt: "Rolls-Royce Phantom",
+    category: "Vehicles",
+    description: "Rolls-Royce Phantom - The pinnacle of luxury",
+  },
+  {
+    id: 10,
+    src: "/placeholder.svg?height=800&width=1200",
+    alt: "Corporate roadshow",
+    category: "Corporate",
+    description: "Multi-city roadshow transportation logistics",
+  },
+  {
+    id: 11,
+    src: "/placeholder.svg?height=800&width=1200",
+    alt: "Chauffeur opening door",
+    category: "Chauffeurs",
+    description: "White glove door service for all clients",
+  },
+  {
+    id: 12,
+    src: "/placeholder.svg?height=800&width=1200",
+    alt: "Gala event arrival",
+    category: "Events",
+    description: "Red carpet arrival at corporate gala event",
+  },
+  {
+    id: 13,
+    src: "/placeholder.svg?height=800&width=1200",
+    alt: "BMW 7 Series interior",
+    category: "Interiors",
+    description: "BMW 7 Series - Cutting-edge technology and comfort",
+  },
+  {
+    id: 14,
+    src: "/placeholder.svg?height=800&width=1200",
+    alt: "Executive team transportation",
+    category: "Corporate",
+    description: "Executive team transportation for board meetings",
+  },
+  {
+    id: 15,
+    src: "/placeholder.svg?height=800&width=1200",
+    alt: "Mercedes-Benz Sprinter exterior",
+    category: "Vehicles",
+    description: "Mercedes-Benz Sprinter - Luxury group transportation",
+  },
+]
 
 export default function GalleryPage() {
-  const [galleryPage, setGalleryPage] = useState<GalleryPageData | null>(null)
-  const [galleryImages, setGalleryImages] = useState<GalleryImageData[]>([])
-  const [categories, setCategories] = useState<string[]>(["All"])
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const galleryPageData = await getGalleryPage() as GalleryPageData
-        const galleryImagesData = await getGalleryImages() as GalleryImageData[]
-        const categoriesData = await getCategories() as CategoryData[]
-        
-        setGalleryPage(galleryPageData)
-        setGalleryImages(galleryImagesData)
-        
-        const categoryNames = categoriesData.map((cat: CategoryData) => cat.attributes.name)
-        setCategories(["All", ...categoryNames])
-      } catch (error) {
-        console.error("Error fetching gallery data:", error)
-      }
-    }
-    
-    fetchData()
-  }, [])
-  
-  // Default values if data is still loading
-  const heroData = galleryPage?.attributes?.hero || {
-    title: "Our Gallery",
-    description: "Explore our collection of luxury vehicles, corporate events, and premium services",
-    backgroundImage: null
-  }
-  
-  // Get image URL
-  const heroImageUrl = heroData?.backgroundImage?.data ? 
-    getStrapiMedia(heroData.backgroundImage) : 
-    "/placeholder.svg?height=800&width=1600"
-  
+
   // Filter images based on selected category
   const filteredImages = galleryImages.filter(
-    (image) => selectedCategory === "All" || image.attributes.category?.data?.attributes?.name === selectedCategory
+    (image) => selectedCategory === "All" || image.category === selectedCategory,
   )
-  
+
   // Open lightbox with specific image
   const openLightbox = (index: number) => {
     setCurrentImageIndex(index)
@@ -140,20 +162,11 @@ export default function GalleryPage() {
 
   return (
     <div className="pt-20" onKeyDown={handleKeyDown} tabIndex={0}>
-      {/* SEO */}
-      {galleryPage?.attributes?.seo && (
-        <Seo seo={{
-          metaTitle: galleryPage.attributes.seo.metaTitle || "Gallery | Empirelink Limo Service",
-          metaDescription: galleryPage.attributes.seo.metaDescription,
-          shareImage: galleryPage.attributes.seo.metaImage,
-        }} />
-      )}
-      
       {/* Hero Section */}
       <section className="relative">
         <div className="absolute inset-0 z-0">
           <Image
-            src={heroImageUrl}
+            src="/placeholder.svg?height=800&width=1600"
             alt="Luxury Fleet Gallery"
             fill
             className="object-cover brightness-50"
@@ -166,10 +179,10 @@ export default function GalleryPage() {
             transition={{ duration: 0.5 }}
             className="max-w-3xl"
           >
-            <h1 className="text-3xl md:text-5xl font-bold mb-6">{heroData.title}</h1>
+            <h1 className="text-3xl md:text-5xl font-bold mb-6">Our Gallery</h1>
             <div className="h-1 w-20 bg-gold mb-6"></div>
             <p className="text-xl text-gray-300 mb-8">
-              {heroData.description}
+              Explore our collection of luxury vehicles, corporate events, and premium services
             </p>
           </motion.div>
         </div>
@@ -205,57 +218,37 @@ export default function GalleryPage() {
             transition={{ duration: 0.5 }}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
           >
-            {filteredImages.length > 0 ? filteredImages.map((image, index) => {
-              const imageData = image.attributes
-              const imageUrl = imageData.image?.data ? 
-                getStrapiMedia(imageData.image) : 
-                "/placeholder.svg?height=800&width=1200"
-              
-              return (
-                <motion.div
-                  key={image.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.05 }}
-                  className="relative group cursor-pointer overflow-hidden rounded-lg border border-gray-800"
-                  onClick={() => openLightbox(index)}
-                >
-                  <div className="relative aspect-[4/3] overflow-hidden">
-                    <Image
-                      src={imageUrl}
-                      alt={imageData.title}
-                      fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
-                      <div className="p-4 w-full">
-                        <div className="bg-gold/20 text-gold px-2 py-1 rounded text-xs inline-block mb-2">
-                          {imageData.category?.data?.attributes?.name || "Vehicle"}
-                        </div>
-                        <h3 className="text-white font-bold">{imageData.title}</h3>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              )
-            }) : Array(15).fill(0).map((_, index) => (
-              // Placeholder gallery items
+            {filteredImages.map((image, index) => (
               <motion.div
-                key={index}
+                key={image.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.05 }}
-                className="relative aspect-[4/3] rounded-lg bg-gray-900 border border-gray-800 overflow-hidden"
+                className="relative group cursor-pointer overflow-hidden rounded-lg border border-gray-800"
+                onClick={() => openLightbox(index)}
               >
-                <div className="absolute inset-0 animate-pulse">
-                  <div className="bg-gray-800 h-full w-full"></div>
+                <div className="relative aspect-[4/3] overflow-hidden">
+                  <Image
+                    src={image.src || "/placeholder.svg"}
+                    alt={image.alt}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                    <div className="p-4 w-full">
+                      <div className="bg-gold/20 text-gold px-2 py-1 rounded text-xs inline-block mb-2">
+                        {image.category}
+                      </div>
+                      <h3 className="text-white font-bold">{image.description}</h3>
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             ))}
           </motion.div>
 
           {/* No Results */}
-          {filteredImages.length === 0 && categories.length > 1 && (
+          {filteredImages.length === 0 && (
             <div className="text-center py-12">
               <h3 className="text-xl font-bold mb-2">No images found</h3>
               <p className="text-gray-400 mb-6">No images available in this category.</p>
@@ -311,10 +304,8 @@ export default function GalleryPage() {
               <div className="relative flex-1 overflow-hidden rounded-lg">
                 <div className="relative h-full w-full">
                   <Image
-                    src={filteredImages[currentImageIndex].attributes.image?.data ? 
-                      getStrapiMedia(filteredImages[currentImageIndex].attributes.image) : 
-                      "/placeholder.svg?height=800&width=1200"}
-                    alt={filteredImages[currentImageIndex].attributes.title}
+                    src={filteredImages[currentImageIndex].src || "/placeholder.svg"}
+                    alt={filteredImages[currentImageIndex].alt}
                     fill
                     className="object-contain"
                   />
@@ -326,10 +317,9 @@ export default function GalleryPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <span className="bg-gold/20 text-gold px-2 py-1 rounded text-xs">
-                      {filteredImages[currentImageIndex].attributes.category?.data?.attributes?.name || "Vehicle"}
+                      {filteredImages[currentImageIndex].category}
                     </span>
-                    <h3 className="text-white font-bold mt-2">{filteredImages[currentImageIndex].attributes.title}</h3>
-                    <p className="text-gray-300 mt-1">{filteredImages[currentImageIndex].attributes.description}</p>
+                    <h3 className="text-white font-bold mt-2">{filteredImages[currentImageIndex].description}</h3>
                   </div>
                   <div className="text-gray-400 text-sm">
                     {currentImageIndex + 1} / {filteredImages.length}

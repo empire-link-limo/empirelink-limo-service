@@ -1,166 +1,102 @@
-// app/services/page.tsx
 "use client"
 
-import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { Award, Clock, Shield, Briefcase, Plane, Calendar, MapPin, Users, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { getServicesPage, getAllServices } from "@/lib/strapi"
-import { getStrapiMedia } from "@/lib/api"
-import Seo from "@/components/seo"
 
-// Define TypeScript interfaces for Strapi data
-interface StrapiImage {
-  data?: {
-    id: number;
-    attributes: {
-      url: string;
-      width?: number;
-      height?: number;
-      alternativeText?: string;
-    };
-  } | null;
-}
-
-interface HeroSection {
-  title: string;
-  description: string;
-  backgroundImage?: StrapiImage;
-}
-
-interface WhyChooseUsSection {
-  title: string;
-  description: string;
-}
-
-interface CTASection {
-  title: string;
-  description: string;
-  buttonText: string;
-  buttonUrl: string;
-  image?: StrapiImage;
-}
-
-interface SEO {
-  metaTitle?: string;
-  metaDescription?: string;
-  metaImage?: StrapiImage;
-}
-
-interface ServicesPageData {
-  id: number;
-  attributes: {
-    hero?: HeroSection;
-    whyChooseUsSection?: WhyChooseUsSection;
-    ctaSection?: CTASection;
-    seo?: SEO;
-  };
-}
-
-interface FeatureData {
-  id: number;
-  attributes: {
-    name: string;
-  };
-}
-
-export interface ServiceData {
-  id: number;
-  attributes: {
-    title: string;
-    slug: string;
-    description: string;
-    icon?: string;
-    image?: StrapiImage;
-    features?: {
-      data: FeatureData[];
-    };
-    seo?: SEO;
-  };
-}
+const services = [
+  {
+    id: "corporate",
+    icon: <Briefcase className="h-12 w-12 text-gold" />,
+    title: "Corporate Transportation",
+    description:
+      "Reliable and punctual service for executives and teams. Our corporate transportation service ensures your team arrives at meetings, conferences, and events on time and in style.",
+    features: [
+      "Dedicated account manager",
+      "Corporate billing options",
+      "Professional chauffeurs",
+      "Real-time tracking",
+      "24/7 dispatch support",
+      "Meet and greet service",
+    ],
+    image: "/placeholder.svg?height=600&width=800",
+  },
+  {
+    id: "airport",
+    icon: <Plane className="h-12 w-12 text-gold" />,
+    title: "Airport Transfers",
+    description:
+      "Seamless airport pickup and drop-off service. Our chauffeurs monitor flight status in real-time to ensure they're ready when you arrive, regardless of delays or early arrivals.",
+    features: [
+      "Flight tracking",
+      "Meet and greet service",
+      "Luggage assistance",
+      "Complimentary wait time",
+      "Terminal navigation assistance",
+      "Curbside pickup",
+    ],
+    image: "/placeholder.svg?height=600&width=800",
+  },
+  {
+    id: "events",
+    icon: <Calendar className="h-12 w-12 text-gold" />,
+    title: "Corporate Events",
+    description:
+      "Coordinated transportation for corporate events. We handle the logistics of moving your team or guests to and from corporate events, ensuring a seamless experience.",
+    features: [
+      "Event coordination",
+      "Multiple vehicle options",
+      "Customized scheduling",
+      "On-site transportation manager",
+      "Group transportation solutions",
+      "VIP service options",
+    ],
+    image: "/placeholder.svg?height=600&width=800",
+  },
+  {
+    id: "roadshows",
+    icon: <MapPin className="h-12 w-12 text-gold" />,
+    title: "Roadshows",
+    description:
+      "Efficient transportation for multi-location roadshows. Our roadshow service ensures executives can focus on their presentations while we handle the complex logistics of tight schedules.",
+    features: [
+      "Detailed itinerary management",
+      "Multiple city coordination",
+      "Consistent service across locations",
+      "Contingency planning",
+      "Real-time adjustments",
+      "Dedicated roadshow coordinator",
+    ],
+    image: "/placeholder.svg?height=600&width=800",
+  },
+  {
+    id: "hourly",
+    icon: <Clock className="h-12 w-12 text-gold" />,
+    title: "Hourly Charters",
+    description:
+      "Flexible transportation for your business day. Our hourly charter service provides a dedicated vehicle and chauffeur for as long as you need, perfect for days with multiple meetings.",
+    features: [
+      "Flexible scheduling",
+      "No hidden fees",
+      "Wait time included",
+      "Multiple stops",
+      "Chauffeur at your disposal",
+      "Last-minute changes accommodation",
+    ],
+    image: "/placeholder.svg?height=600&width=800",
+  },
+]
 
 export default function ServicesPage() {
-  const [servicesPage, setServicesPage] = useState<ServicesPageData | null>(null)
-  const [services, setServices] = useState<ServiceData[]>([])
-  
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const servicesPageData = await getServicesPage() as ServicesPageData
-        const servicesData = await getAllServices() as ServiceData[]
-        
-        setServicesPage(servicesPageData)
-        setServices(servicesData)
-      } catch (error) {
-        console.error("Error fetching services page data:", error)
-      }
-    }
-    
-    fetchData()
-  }, [])
-  
-  // Default values if data is still loading
-  const heroData = servicesPage?.attributes?.hero || {
-    title: "Our Services",
-    description: "Comprehensive transportation solutions tailored to your corporate needs",
-    backgroundImage: null
-  }
-  
-  const whyChooseUs = servicesPage?.attributes?.whyChooseUsSection || {
-    title: "Why Choose Luxury Limo",
-    description: "What sets our service apart from the rest"
-  }
-  
-  const ctaData = servicesPage?.attributes?.ctaSection || {
-    title: "Ready to Elevate Your Corporate Transportation?",
-    description: "Contact us today to discuss your transportation needs and discover how we can tailor our services to your requirements.",
-    buttonText: "Book Now",
-    buttonUrl: "/booking",
-    image: null
-  }
-  
-  // Get image URLs
-  const heroImageUrl = heroData?.backgroundImage?.data ? 
-    getStrapiMedia(heroData.backgroundImage) : 
-    "/placeholder.svg?height=800&width=1600"
-    
-  const ctaImageUrl = ctaData?.image?.data ? 
-    getStrapiMedia(ctaData.image) : 
-    "/placeholder.svg?height=600&width=800"
-  
-  // Map icon names to components
-  const getIconComponent = (iconName: string | undefined) => {
-    switch (iconName) {
-      case "Briefcase": return <Briefcase className="h-12 w-12 text-gold" />
-      case "Plane": return <Plane className="h-12 w-12 text-gold" />
-      case "Calendar": return <Calendar className="h-12 w-12 text-gold" />
-      case "MapPin": return <MapPin className="h-12 w-12 text-gold" />
-      case "Clock": return <Clock className="h-12 w-12 text-gold" />
-      case "Award": return <Award className="h-12 w-12 text-gold" />
-      case "Shield": return <Shield className="h-12 w-12 text-gold" />
-      case "Users": return <Users className="h-12 w-12 text-gold" />
-      default: return <Briefcase className="h-12 w-12 text-gold" />
-    }
-  }
-
   return (
     <div className="pt-20">
-      {/* SEO */}
-      {servicesPage?.attributes?.seo && (
-        <Seo seo={{
-          metaTitle: servicesPage.attributes.seo.metaTitle || "Our Services | Empirelink Limo Service",
-          metaDescription: servicesPage.attributes.seo.metaDescription,
-          shareImage: servicesPage.attributes.seo.metaImage,
-        }} />
-      )}
-      
       {/* Hero Section */}
       <section className="relative">
         <div className="absolute inset-0 z-0">
           <Image
-            src={heroImageUrl}
+            src="/placeholder.svg?height=800&width=1600"
             alt="Our Services"
             fill
             className="object-cover brightness-50"
@@ -173,10 +109,10 @@ export default function ServicesPage() {
             transition={{ duration: 0.5 }}
             className="max-w-3xl"
           >
-            <h1 className="text-3xl md:text-5xl font-bold mb-6">{heroData.title}</h1>
+            <h1 className="text-3xl md:text-5xl font-bold mb-6">Our Services</h1>
             <div className="h-1 w-20 bg-gold mb-6"></div>
             <p className="text-xl text-gray-300 mb-8">
-              {heroData.description}
+              Comprehensive transportation solutions tailored to your corporate needs
             </p>
           </motion.div>
         </div>
@@ -186,108 +122,7 @@ export default function ServicesPage() {
       <section className="py-20 bg-black">
         <div className="container mx-auto px-4">
           <div className="space-y-24">
-            {services && services.length > 0 ? services.map((service, index) => {
-              const serviceData = service.attributes
-              const imageUrl = serviceData.image?.data ? 
-                getStrapiMedia(serviceData.image) : 
-                "/placeholder.svg?height=600&width=800"
-              
-              return (
-                <div key={service.id} id={serviceData.slug} className="scroll-mt-24">
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    viewport={{ once: true }}
-                    className={`grid md:grid-cols-2 gap-12 items-center ${index % 2 === 1 ? "md:grid-flow-dense" : ""}`}
-                  >
-                    <div className={index % 2 === 1 ? "md:col-start-2" : ""}>
-                      <div className="flex items-center mb-4">
-                        {getIconComponent(serviceData.icon)}
-                        <h2 className="text-2xl md:text-3xl font-bold ml-4">{serviceData.title}</h2>
-                      </div>
-                      <div className="h-1 w-20 bg-gold mb-6"></div>
-                      <p className="text-gray-300 mb-6">{serviceData.description}</p>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
-                        {serviceData.features?.data ? serviceData.features.data.map((feature: FeatureData, i: number) => (
-                          <div key={i} className="flex items-start">
-                            <Check className="h-5 w-5 text-gold mr-2 mt-0.5" />
-                            <span className="text-gray-300">{feature.attributes.name}</span>
-                          </div>
-                        )) : Array(6).fill(0).map((_, i) => (
-                          <div key={i} className="flex items-start">
-                            <Check className="h-5 w-5 text-gold mr-2 mt-0.5" />
-                            <span className="text-gray-300">Premium Feature</span>
-                          </div>
-                        ))}
-                      </div>
-                      <Button asChild className="bg-gold hover:bg-gold-light text-black">
-                        <Link href="/booking">Book This Service</Link>
-                      </Button>
-                    </div>
-                    <div className={index % 2 === 1 ? "md:col-start-1" : ""}>
-                      <div className="relative h-[400px] rounded-lg overflow-hidden">
-                        <Image
-                          src={imageUrl}
-                          alt={serviceData.title}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                    </div>
-                  </motion.div>
-                </div>
-              )
-            }) : [
-              {
-                id: "corporate",
-                icon: <Briefcase className="h-12 w-12 text-gold" />,
-                title: "Corporate Transportation",
-                description:
-                  "Reliable and punctual service for executives and teams. Our corporate transportation service ensures your team arrives at meetings, conferences, and events on time and in style.",
-                features: [
-                  "Dedicated account manager",
-                  "Corporate billing options",
-                  "Professional chauffeurs",
-                  "Real-time tracking",
-                  "24/7 dispatch support",
-                  "Meet and greet service",
-                ],
-                image: "/placeholder.svg?height=600&width=800",
-              },
-              {
-                id: "airport",
-                icon: <Plane className="h-12 w-12 text-gold" />,
-                title: "Airport Transfers",
-                description:
-                  "Seamless airport pickup and drop-off service. Our chauffeurs monitor flight status in real-time to ensure they're ready when you arrive, regardless of delays or early arrivals.",
-                features: [
-                  "Flight tracking",
-                  "Meet and greet service",
-                  "Luggage assistance",
-                  "Complimentary wait time",
-                  "Terminal navigation assistance",
-                  "Curbside pickup",
-                ],
-                image: "/placeholder.svg?height=600&width=800",
-              },
-              {
-                id: "events",
-                icon: <Calendar className="h-12 w-12 text-gold" />,
-                title: "Corporate Events",
-                description:
-                  "Coordinated transportation for corporate events. We handle the logistics of moving your team or guests to and from corporate events, ensuring a seamless experience.",
-                features: [
-                  "Event coordination",
-                  "Multiple vehicle options",
-                  "Customized scheduling",
-                  "On-site transportation manager",
-                  "Group transportation solutions",
-                  "VIP service options",
-                ],
-                image: "/placeholder.svg?height=600&width=800",
-              },
-            ].map((service, index) => (
+            {services.map((service, index) => (
               <div key={service.id} id={service.id} className="scroll-mt-24">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -304,7 +139,7 @@ export default function ServicesPage() {
                     <div className="h-1 w-20 bg-gold mb-6"></div>
                     <p className="text-gray-300 mb-6">{service.description}</p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
-                      {service.features.map((feature: string, i: number) => (
+                      {service.features.map((feature, i) => (
                         <div key={i} className="flex items-start">
                           <Check className="h-5 w-5 text-gold mr-2 mt-0.5" />
                           <span className="text-gray-300">{feature}</span>
@@ -318,7 +153,7 @@ export default function ServicesPage() {
                   <div className={index % 2 === 1 ? "md:col-start-1" : ""}>
                     <div className="relative h-[400px] rounded-lg overflow-hidden">
                       <Image
-                        src={service.image}
+                        src={service.image || "/placeholder.svg"}
                         alt={service.title}
                         fill
                         className="object-cover"
@@ -342,9 +177,9 @@ export default function ServicesPage() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-3xl font-bold mb-4">{whyChooseUs.title}</h2>
+            <h2 className="text-3xl font-bold mb-4">Why Choose Luxury Limo</h2>
             <div className="h-1 w-20 bg-gold mx-auto mb-6"></div>
-            <p className="text-gray-300 max-w-2xl mx-auto">{whyChooseUs.description}</p>
+            <p className="text-gray-300 max-w-2xl mx-auto">What sets our service apart from the rest</p>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8">
@@ -407,13 +242,14 @@ export default function ServicesPage() {
           <div className="bg-black rounded-lg border border-gray-800 p-8 md:p-12">
             <div className="grid md:grid-cols-2 gap-8 items-center">
               <div>
-                <h2 className="text-2xl md:text-3xl font-bold mb-4">{ctaData.title}</h2>
+                <h2 className="text-2xl md:text-3xl font-bold mb-4">Ready to Elevate Your Corporate Transportation?</h2>
                 <p className="text-gray-300 mb-6">
-                  {ctaData.description}
+                  Contact us today to discuss your transportation needs and discover how we can tailor our services to
+                  your requirements.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Button asChild className="bg-gold hover:bg-gold-light text-black">
-                    <Link href={ctaData.buttonUrl || "/booking"}>{ctaData.buttonText || "Book Now"}</Link>
+                    <Link href="/booking">Book Now</Link>
                   </Button>
                   <Button asChild variant="outline" className="border-white hover:bg-white/10">
                     <Link href="/contact">Contact Us</Link>
@@ -422,7 +258,7 @@ export default function ServicesPage() {
               </div>
               <div className="relative h-64 rounded-lg overflow-hidden">
                 <Image
-                  src={ctaImageUrl}
+                  src="/placeholder.svg?height=600&width=800"
                   alt="Luxury transportation"
                   fill
                   className="object-cover"

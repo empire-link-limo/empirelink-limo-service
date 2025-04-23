@@ -1,6 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Playfair_Display, Inter } from "next/font/google";
+import { Inter, Playfair_Display } from "next/font/google"
 import "./globals.css"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
@@ -9,17 +9,18 @@ import { ThemeProvider } from "@/components/theme-provider"
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
-});
+})
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-playfair",
-});
+})
 
 export const metadata: Metadata = {
   title: "Luxury Limo Service | Corporate Transportation",
   description:
     "Premium limousine and chauffeur services for corporate clients. Experience luxury, reliability, and professionalism.",
+    generator: 'v0.dev'
 }
 
 export default function RootLayout({
