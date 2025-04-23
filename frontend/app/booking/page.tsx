@@ -1,13 +1,52 @@
+// app/booking/page.tsx
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
+import { getBookingPage } from "@/lib/strapi"
+import { getStrapiMedia } from "@/lib/api"
+import Seo from "@/components/seo"
+import { BookingPageData } from "@/lib/types"
 
 export default function BookingPage() {
+  const [bookingPage, setBookingPage] = useState<BookingPageData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const bookingPageData = await getBookingPage()
+        setBookingPage(bookingPageData)
+      } catch (error) {
+        console.error("Error fetching booking page data:", error)
+      }
+    }
+    
+    fetchData()
+  }, [])
+  
+  // Default values if data is still loading
+  const pageData = bookingPage?.attributes || {
+    title: "Book Your Luxury Transportation",
+    description: "Use our convenient booking system to reserve your premium transportation service",
+    bookingIframeUrl: "https://customer.moovs.app/luxury-limo/iframe",
+    contactInfo: {
+      phone: "+1 (234) 567-8900",
+      email: "bookings@luxurylimo.com"
+    }
+  }
 
   return (
     <div className="pt-20">
+      {/* SEO */}
+      {bookingPage?.attributes?.seo && (
+        <Seo seo={{
+          metaTitle: bookingPage.attributes.seo.metaTitle || "Book Now | Empirelink Limo Service",
+          metaDescription: bookingPage.attributes.seo.metaDescription,
+          shareImage: bookingPage.attributes.seo.metaImage,
+        }} />
+      )}
+      
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           <motion.div
@@ -16,10 +55,10 @@ export default function BookingPage() {
             transition={{ duration: 0.5 }}
             className="text-center mb-12"
           >
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">Book Your Luxury Transportation</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">{pageData.title}</h1>
             <div className="h-1 w-20 bg-gold mx-auto mb-6"></div>
             <p className="text-gray-300 max-w-2xl mx-auto">
-              Use our convenient booking system to reserve your premium transportation service
+              {pageData.description}
             </p>
           </motion.div>
 
@@ -30,7 +69,7 @@ export default function BookingPage() {
               </div>
             )}
             <iframe
-              src="https://customer.moovs.app/luxury-limo/iframe"
+              src={pageData.bookingIframeUrl || "https://customer.moovs.app/luxury-limo/iframe"}
               width="100%"
               height="720"
               className="border-0"
@@ -42,12 +81,12 @@ export default function BookingPage() {
             <p className="text-gray-400 mb-4">Having trouble with the booking system?</p>
             <p className="text-gray-300">
               Contact us directly at{" "}
-              <a href="tel:+1234567890" className="text-gold hover:underline">
-                +1 (234) 567-8900
+              <a href={`tel:${pageData.contactInfo?.phone || "+1234567890"}`} className="text-gold hover:underline">
+                {pageData.contactInfo?.phone || "+1 (234) 567-8900"}
               </a>{" "}
               or{" "}
-              <a href="mailto:bookings@luxurylimo.com" className="text-gold hover:underline">
-                bookings@luxurylimo.com
+              <a href={`mailto:${pageData.contactInfo?.email || "bookings@luxurylimo.com"}`} className="text-gold hover:underline">
+                {pageData.contactInfo?.email || "bookings@luxurylimo.com"}
               </a>
             </p>
           </div>
