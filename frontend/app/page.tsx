@@ -1,4 +1,3 @@
-// app/page.tsx
 "use client"
 
 import { useRef, useEffect, useState } from "react"
@@ -48,31 +47,31 @@ export default function Home() {
   }
 
   // Default values if data is still loading
-  const heroData = homepage?.attributes?.hero || {
+  const heroData = homepage?.HeroSection || {
     title: "<span class='gold-gradient'>Elevate</span> Your Corporate Travel",
-    description: "Premium limousine and chauffeur services for discerning corporate clients",
+    subtitle: "Premium limousine and chauffeur services for discerning corporate clients",
     primaryButtonText: "Book Now",
     primaryButtonUrl: "/booking",
     secondaryButtonText: "Explore Fleet",
     secondaryButtonUrl: "/fleet"
   }
   
-  const fleetSection = homepage?.attributes?.fleetSection || {
+  const fleetSection = homepage?.FleetSection || {
     title: "Our Premium Fleet",
     description: "Experience unparalleled comfort and style with our meticulously maintained luxury vehicles"
   }
   
-  const servicesSection = homepage?.attributes?.servicesSection || {
+  const servicesSection = homepage?.ServicesSection || {
     title: "Our Services",
     description: "Tailored transportation solutions for your corporate needs"
   }
   
-  const testimonialsSection = homepage?.attributes?.testimonialsSection || {
+  const testimonialsSection = homepage?.TestimonialsSection || {
     title: "Client Testimonials",
     description: "What our corporate clients say about our service"
   }
   
-  const ctaSection = homepage?.attributes?.ctaSection || {
+  const ctaSection = homepage?.CTASection || {
     title: "Ready to Experience Premium Corporate Transportation?",
     description: "Book your luxury transportation service today and elevate your corporate travel experience.",
     buttonText: "Book Now",
@@ -80,22 +79,22 @@ export default function Home() {
   }
   
   // Get image URLs
-  const heroImageUrl = homepage?.attributes?.hero?.backgroundImage?.data ?
-    getStrapiMedia(homepage.attributes.hero.backgroundImage) : 
+  const heroImageUrl = homepage?.HeroSection?.backgroundImage ?
+    getStrapiMedia(homepage.HeroSection.backgroundImage) : 
     "/placeholder.svg?height=1080&width=1920"
     
-  const ctaImageUrl = homepage?.attributes?.ctaSection?.backgroundImage?.data ?
-    getStrapiMedia(homepage.attributes.ctaSection.backgroundImage) : 
+  const ctaImageUrl = homepage?.CTASection?.backgroundImage ?
+    getStrapiMedia(homepage.CTASection.backgroundImage) : 
     "/placeholder.svg?height=800&width=1600"
 
   return (
     <div className="flex flex-col">
       {/* SEO */}
-      {homepage?.attributes?.seo && (
+      {homepage?.SEO && (
         <Seo seo={{
-          metaTitle: homepage.attributes.seo.metaTitle || "Empirelink Limo Service | Premium Transportation",
-          metaDescription: homepage.attributes.seo.metaDescription,
-          shareImage: homepage.attributes.seo.metaImage,
+          metaTitle: homepage.SEO.metaTitle || "Empirelink Limo Service | Premium Transportation",
+          metaDescription: homepage.SEO.metaDescription,
+          shareImage: homepage.SEO.metaImage,
         }} />
       )}
       
@@ -116,14 +115,18 @@ export default function Home() {
               <span dangerouslySetInnerHTML={{ __html: heroData.title }} />
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto mb-8">
-              {heroData.description}
+              {heroData.subtitle || heroData.description}
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Button asChild size="lg" className="bg-gold hover:bg-gold-light text-black text-lg">
-                <Link href={heroData.primaryButtonUrl}>{heroData.primaryButtonText}</Link>
+                <Link href={heroData.primaryButtonUrl || "/booking"}>
+                  {heroData.primaryButtonText || "Book Now"}
+                </Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="border-white hover:bg-white/10 text-lg">
-                <Link href={heroData.secondaryButtonUrl}>{heroData.secondaryButtonText}</Link>
+                <Link href={heroData.secondaryButtonUrl || "/fleet"}>
+                  {heroData.secondaryButtonText || "Explore Fleet"}
+                </Link>
               </Button>
             </div>
           </motion.div>
@@ -155,9 +158,8 @@ export default function Home() {
 
             <div ref={scrollContainerRef} className="flex overflow-x-auto gap-6 py-4 px-2 horizontal-scroll">
               {vehicles && vehicles.length > 0 ? vehicles.map((vehicle) => {
-                const vehicleData = vehicle.attributes
-                const imageUrl = vehicleData.image?.data ? 
-                  getStrapiMedia(vehicleData.image) : 
+                const imageUrl = vehicle.image ? 
+                  getStrapiMedia(vehicle.image) : 
                   "/placeholder.svg?height=600&width=800"
                 
                 return (
@@ -171,17 +173,17 @@ export default function Home() {
                       <div className="relative h-48">
                       <Image
                         src={imageUrl || "/placeholder.svg?height=600&width=800"}
-                        alt={vehicleData.name}
+                        alt={vehicle.name}
                         fill
                         className="object-cover"
                       />
                       </div>
                       <div className="p-6">
-                        <h3 className="text-xl font-bold mb-2">{vehicleData.name}</h3>
-                        <p className="text-gold mb-2">{vehicleData.capacity}</p>
-                        <p className="text-gray-400 mb-4">{vehicleData.description}</p>
+                        <h3 className="text-xl font-bold mb-2">{vehicle.name}</h3>
+                        <p className="text-gold mb-2">{vehicle.capacity}</p>
+                        <p className="text-gray-400 mb-4">{vehicle.description}</p>
                         <Button asChild variant="outline" className="w-full border-gold text-gold hover:bg-gold/10">
-                          <Link href={`/fleet/${vehicleData.slug}`}>View Details</Link>
+                          <Link href={`/fleet/${vehicle.slug}`}>View Details</Link>
                         </Button>
                       </div>
                     </div>
@@ -242,12 +244,12 @@ export default function Home() {
             <p className="text-gray-300 max-w-2xl mx-auto">
               {servicesSection.description}
             </p>
-          </div>
+
+            </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {services && services.length > 0 ? services.map((service, index) => {
-              const serviceData = service.attributes
-              const iconName = serviceData.icon || ["Award", "Clock", "Shield"][index % 3]
+              const iconName = service.icon || ["Award", "Clock", "Shield"][index % 3]
               let IconComponent = Award
               
               if (iconName === "Clock") IconComponent = Clock
@@ -265,10 +267,10 @@ export default function Home() {
                   <div className="flex justify-center mb-6">
                     <IconComponent className="h-10 w-10 text-gold" />
                   </div>
-                  <h3 className="text-xl font-bold mb-4">{serviceData.title}</h3>
-                  <p className="text-gray-400 mb-6">{serviceData.description}</p>
+                  <h3 className="text-xl font-bold mb-4">{service.title}</h3>
+                  <p className="text-gray-400 mb-6">{service.description}</p>
                   <Button asChild variant="link" className="text-gold">
-                    <Link href={`/services#${serviceData.slug}`}>
+                    <Link href={`/services#${service.slug}`}>
                       Learn More <ChevronRight className="h-4 w-4 ml-1" />
                     </Link>
                   </Button>
@@ -324,9 +326,8 @@ export default function Home() {
 
           <div className="grid md:grid-cols-3 gap-8">
             {testimonials && testimonials.length > 0 ? testimonials.map((testimonial, index) => {
-              const testimonialData = testimonial.attributes
-              const imageUrl = testimonialData.image?.data ? 
-                getStrapiMedia(testimonialData.image) : 
+              const imageUrl = testimonial.image ? 
+                getStrapiMedia(testimonial.image) : 
                 "/placeholder.svg?height=100&width=100"
               
               return (
@@ -342,7 +343,7 @@ export default function Home() {
                     <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-gold">
                     <Image
                       src={imageUrl || "/placeholder.svg?height=100&width=100"}
-                      alt={testimonialData.name}
+                      alt={testimonial.name}
                       fill
                       className="object-cover"
                     />
@@ -353,10 +354,10 @@ export default function Home() {
                       <Star key={i} className="h-5 w-5 fill-current" />
                     ))}
                   </div>
-                  <p className="text-gray-300 italic mb-6">"{testimonialData.quote}"</p>
+                  <p className="text-gray-300 italic mb-6">"{testimonial.quote}"</p>
                   <div className="text-center">
-                    <h4 className="font-bold">{testimonialData.name}</h4>
-                    <p className="text-gray-400 text-sm">{testimonialData.company}</p>
+                    <h4 className="font-bold">{testimonial.name}</h4>
+                    <p className="text-gray-400 text-sm">{testimonial.company}</p>
                   </div>
                 </motion.div>
               )

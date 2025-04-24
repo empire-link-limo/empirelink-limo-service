@@ -26,11 +26,11 @@ export default function BookingPage() {
   }, [])
   
   // Default values if data is still loading
-  const pageData = bookingPage?.attributes || {
+  const pageData = bookingPage || {
     title: "Book Your Luxury Transportation",
     description: "Use our convenient booking system to reserve your premium transportation service",
-    bookingIframeUrl: "https://customer.moovs.app/luxury-limo/iframe",
-    contactInfo: {
+    bookingIframeURL: "https://customer.moovs.app/luxury-limo/iframe",
+    ContactInfo: {
       phone: "+1 (234) 567-8900",
       email: "bookings@luxurylimo.com"
     }
@@ -39,11 +39,11 @@ export default function BookingPage() {
   return (
     <div className="pt-20">
       {/* SEO */}
-      {bookingPage?.attributes?.seo && (
+      {bookingPage?.SEO && (
         <Seo seo={{
-          metaTitle: bookingPage.attributes.seo.metaTitle || "Book Now | Empirelink Limo Service",
-          metaDescription: bookingPage.attributes.seo.metaDescription,
-          shareImage: bookingPage.attributes.seo.metaImage,
+          metaTitle: bookingPage.SEO.metaTitle || "Book Now | Empirelink Limo Service",
+          metaDescription: bookingPage.SEO.metaDescription,
+          shareImage: bookingPage.SEO.metaImage,
         }} />
       )}
       
@@ -69,7 +69,7 @@ export default function BookingPage() {
               </div>
             )}
             <iframe
-              src={pageData.bookingIframeUrl || "https://customer.moovs.app/luxury-limo/iframe"}
+              src={pageData.bookingIframeURL || "https://customer.moovs.app/luxury-limo/iframe"}
               width="100%"
               height="720"
               className="border-0"
@@ -81,12 +81,12 @@ export default function BookingPage() {
             <p className="text-gray-400 mb-4">Having trouble with the booking system?</p>
             <p className="text-gray-300">
               Contact us directly at{" "}
-              <a href={`tel:${pageData.contactInfo?.phone || "+1234567890"}`} className="text-gold hover:underline">
-                {pageData.contactInfo?.phone || "+1 (234) 567-8900"}
+              <a href={`tel:${pageData.ContactInfo?.phone || "+1234567890"}`} className="text-gold hover:underline">
+                {pageData.ContactInfo?.phone || "+1 (234) 567-8900"}
               </a>{" "}
               or{" "}
-              <a href={`mailto:${pageData.contactInfo?.email || "bookings@luxurylimo.com"}`} className="text-gold hover:underline">
-                {pageData.contactInfo?.email || "bookings@luxurylimo.com"}
+              <a href={`mailto:${pageData.ContactInfo?.email || "bookings@luxurylimo.com"}`} className="text-gold hover:underline">
+                {pageData.ContactInfo?.email || "bookings@luxurylimo.com"}
               </a>
             </p>
           </div>

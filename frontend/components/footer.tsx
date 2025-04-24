@@ -6,11 +6,11 @@ import { GlobalData, SocialLink } from "@/lib/types"
 
 export function Footer({ global }: { global?: GlobalData }) {
   const currentYear = new Date().getFullYear();
-  const companyName = global?.attributes?.companyName || "Luxury Limo Service";
-  const phone = global?.attributes?.phone || "+1 (234) 567-8900";
-  const email = global?.attributes?.email || "info@luxurylimo.com";
-  const address = global?.attributes?.address || "123 Luxury Drive, Suite 400\nNew York, NY 10001";
-  const footerText = global?.attributes?.footerText || `© ${currentYear} ${companyName}. All rights reserved.`;
+  const companyName = global?.companyName || "Luxury Limo Service";
+  const phone = global?.phone || "+1 (234) 567-8900";
+  const email = global?.email || "info@luxurylimo.com";
+  const address = global?.address || "123 Luxury Drive, Suite 400\nNew York, NY 10001";
+  const footerText = global?.footerText || `© ${currentYear} ${companyName}. All rights reserved.`;
   
   return (
     <footer className="bg-black border-t border-gray-800">
@@ -18,14 +18,14 @@ export function Footer({ global }: { global?: GlobalData }) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
             <h3 className="text-xl font-playfair font-bold mb-4">
-              <span className="gold-gradient">{global?.attributes?.companyName || "Empire Link"}</span> Limo
+              <span className="gold-gradient">{global?.companyName || "Empire Link"}</span> Limo
             </h3>
             <p className="text-gray-400 mb-4">
               Premium limousine and chauffeur services for discerning corporate clients.
             </p>
             <div className="flex space-x-4">
-              {global?.attributes?.socialLinks && global.attributes.socialLinks.length > 0 ? (
-                global.attributes.socialLinks.map((social, idx) => {
+              {global?.socialLinks && global.socialLinks.length > 0 ? (
+                global.socialLinks.map((social, idx) => {
                   let Icon;
                   switch (social.platform.toLowerCase()) {
                     case 'facebook': Icon = Facebook; break;

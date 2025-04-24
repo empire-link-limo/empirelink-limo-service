@@ -13,7 +13,7 @@ export async function generateStaticParams() {
   const posts = await getAllPosts(100) as BlogPostsResponse;
   
   return posts.data.map((post) => ({
-    slug: post.attributes.slug,
+    slug: post.slug,
   }));
 }
 
@@ -25,19 +25,18 @@ export default async function BlogPost({ params }: { params: { slug: string } })
     return notFound();
   }
   
-  const postData = post.attributes;
-  const imageUrl = postData.image?.data ? 
-    getStrapiMedia(postData.image) : 
+  const imageUrl = post.image ? 
+    getStrapiMedia(post.image) : 
     "/placeholder.svg?height=800&width=1200";
   
   return (
     <div className="pt-20">
       {/* SEO */}
-      {postData.seo && (
+      {post.seo && (
         <Seo seo={{
-          metaTitle: postData.seo.metaTitle || postData.title,
-          metaDescription: postData.seo.metaDescription || postData.excerpt,
-          shareImage: postData.seo.metaImage || postData.image,
+          metaTitle: post.seo.metaTitle || post.title,
+          metaDescription: post.seo.metaDescription || post.excerpt,
+          shareImage: post.seo.metaImage || post.image,
         }} />
       )}
       
@@ -49,12 +48,12 @@ export default async function BlogPost({ params }: { params: { slug: string } })
         
         <article className="max-w-4xl mx-auto">
           <header className="mb-8">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">{postData.title}</h1>
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">{post.title}</h1>
             
             <div className="flex flex-wrap items-center text-gray-400 text-sm mb-6 gap-4">
               <div className="flex items-center">
                 <Calendar className="h-4 w-4 mr-1" />
-                <span>{new Date(postData.Published).toLocaleDateString('en-US', {
+                <span>{new Date(post.published || Date.now()).toLocaleDateString('en-US', {
                   year: 'numeric',
                   month: 'long',
                   day: 'numeric'
@@ -63,13 +62,13 @@ export default async function BlogPost({ params }: { params: { slug: string } })
               
               <div className="flex items-center">
                 <User className="h-4 w-4 mr-1" />
-                <span>{postData.author}</span>
+                <span>{post.author || "Admin"}</span>
               </div>
               
-              {postData.category?.data && (
+              {post.categories && post.categories.length > 0 && (
                 <div className="flex items-center">
                   <Tag className="h-4 w-4 mr-1" />
-                  <span>{postData.category.data.attributes.name}</span>
+                  <span>{post.categories[0].name}</span>
                 </div>
               )}
             </div>
@@ -77,19 +76,19 @@ export default async function BlogPost({ params }: { params: { slug: string } })
             <div className="relative aspect-video mb-8 rounded-lg overflow-hidden">
               <Image
                 src={imageUrl}
-                alt={postData.title}
+                alt={post.title}
                 fill
                 className="object-cover"
                 priority
               />
             </div>
             
-            <p className="text-lg text-gray-300 italic border-l-4 border-gold pl-4">{postData.excerpt}</p>
+            <p className="text-lg text-gray-300 italic border-l-4 border-gold pl-4">{post.excerpt}</p>
           </header>
           
           <div 
             className="prose prose-invert prose-lg max-w-none prose-headings:font-playfair prose-headings:text-white prose-a:text-gold"
-            dangerouslySetInnerHTML={{ __html: postData.content }}
+            dangerouslySetInnerHTML={{ __html: post.content || "" }}
           />
           
           <div className="mt-12 pt-8 border-t border-gray-800">

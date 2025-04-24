@@ -16,11 +16,11 @@ export function getStrapiURL(path = ""): string {
  * @returns {string | null} Full media URL or null if media is undefined
  */
 export function getStrapiMedia(media: any): string {
-  if (!media || !media.data || !media.data.attributes) {
+  if (!media || !media.url) {
     return "/placeholder.svg"; // Default fallback image
   }
   
-  const { url } = media.data.attributes;
+  const { url } = media;
   return url.startsWith("/") ? getStrapiURL(url) : url;
 }
 
@@ -53,13 +53,19 @@ export async function fetchAPI(
   )}`;
 
   // Trigger API call
-  const response = await fetch(requestUrl, mergedOptions);
+  try {
+    const response = await fetch(requestUrl, mergedOptions);
 
-  // Handle response
-  if (!response.ok) {
-    console.error(response.statusText);
-    throw new Error(`An error occurred please try again`);
+    // Handle response
+    if (!response.ok) {
+      console.error(response.statusText);
+      throw new Error(`An error occurred please try again`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching from Strapi:", error);
+    throw error;
   }
-  const data = await response.json();
-  return data;
 }

@@ -1,4 +1,3 @@
-// app/blog/page.tsx
 "use client"
 
 import { useState, useEffect } from "react"
@@ -30,7 +29,7 @@ export default function BlogPage() {
         setBlogPage(blogPageData)
         setPosts(postsData.data)
         
-        const categoryOptions = categoriesData.map((category: CategoryData) => category.attributes.name)
+        const categoryOptions = categoriesData.map((category: CategoryData) => category.name)
         setCategories(["All", ...categoryOptions])
       } catch (error) {
         console.error("Error fetching blog page data:", error)
@@ -41,41 +40,40 @@ export default function BlogPage() {
   }, [])
   
   // Default values if data is still loading
-  const heroData = blogPage?.attributes?.hero || {
+  const heroData = blogPage?.HeroSection || {
     title: "Our Blog",
     description: "Insights and updates from the world of luxury corporate transportation",
     backgroundImage: null
   }
   
   // Get image URL
-  const heroImageUrl = heroData?.backgroundImage?.data ? 
+  const heroImageUrl = heroData?.backgroundImage ? 
     getStrapiMedia(heroData.backgroundImage) : 
     "/placeholder.svg?height=800&width=1600"
   
   // Filter posts
   const filteredPosts = posts.filter((post) => {
-    const postData = post.attributes
-    const categoryName = postData.category?.data?.attributes?.name
+    const categoryName = post.categories && post.categories.length > 0 ? post.categories[0]?.name : undefined
     
     const matchesCategory = selectedCategory === "All" || categoryName === selectedCategory
     const matchesSearch =
-      postData.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      postData.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
+      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (post.excerpt?.toLowerCase() || "").includes(searchQuery.toLowerCase())
       
     return matchesCategory && matchesSearch
   })
   
   // Get featured post
-  const featuredPost = posts.find((post) => post.attributes.featured)
+  const featuredPost = posts.find((post) => post.featured)
 
   return (
     <div className="pt-20">
       {/* SEO */}
-      {blogPage?.attributes?.seo && (
+      {blogPage?.SEO && (
         <Seo seo={{
-          metaTitle: blogPage.attributes.seo.metaTitle || "Blog | Empirelink Limo Service",
-          metaDescription: blogPage.attributes.seo.metaDescription,
-          shareImage: blogPage.attributes.seo.metaImage,
+          metaTitle: blogPage.SEO.metaTitle || "Blog | Empirelink Limo Service",
+          metaDescription: blogPage.SEO.metaDescription,
+          shareImage: blogPage.SEO.metaImage,
         }} />
       )}
       
@@ -145,10 +143,10 @@ export default function BlogPage() {
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="relative h-64 md:h-auto">
                     <Image
-                      src={featuredPost.attributes.image?.data ? 
-                        getStrapiMedia(featuredPost.attributes.image) : 
+                      src={featuredPost.image ? 
+                        getStrapiMedia(featuredPost.image) : 
                         "/placeholder.svg?height=600&width=800"}
-                      alt={featuredPost.attributes.title}
+                      alt={featuredPost.title}
                       fill
                       className="object-cover"
                     />
@@ -157,12 +155,12 @@ export default function BlogPage() {
                     <div className="mb-2">
                       <span className="bg-gold/20 text-gold px-3 py-1 rounded-full text-sm">Featured</span>
                     </div>
-                    <h2 className="text-2xl md:text-3xl font-bold mb-4">{featuredPost.attributes.title}</h2>
-                    <p className="text-gray-300 mb-6">{featuredPost.attributes.excerpt}</p>
+                    <h2 className="text-2xl md:text-3xl font-bold mb-4">{featuredPost.title}</h2>
+                    <p className="text-gray-300 mb-6">{featuredPost.excerpt}</p>
                     <div className="flex items-center text-gray-400 text-sm mb-6">
                       <div className="flex items-center mr-4">
                         <Calendar className="h-4 w-4 mr-1" />
-                        <span>{new Date(featuredPost.attributes.Published).toLocaleDateString('en-US', {
+                        <span>{new Date(featuredPost.published || Date.now()).toLocaleDateString('en-US', {
                           year: 'numeric',
                           month: 'long',
                           day: 'numeric'
@@ -170,15 +168,17 @@ export default function BlogPage() {
                       </div>
                       <div className="flex items-center mr-4">
                         <User className="h-4 w-4 mr-1" />
-                        <span>{featuredPost.attributes.author || "Admin"}</span>
+                        <span>{featuredPost.author || "Admin"}</span>
                       </div>
                       <div className="flex items-center">
                         <Tag className="h-4 w-4 mr-1" />
-                        <span>{featuredPost.attributes.category?.data?.attributes?.name || "Uncategorized"}</span>
+                        <span>{featuredPost.categories && featuredPost.categories.length > 0 
+                          ? featuredPost.categories[0]?.name 
+                          : "Uncategorized"}</span>
                       </div>
                     </div>
                     <Button asChild className="mt-auto bg-gold hover:bg-gold-light text-black self-start">
-                      <Link href={`/blog/${featuredPost.attributes.slug}`}>
+                      <Link href={`/blog/${featuredPost.slug}`}>
                         Read More <ChevronRight className="h-4 w-4 ml-1" />
                       </Link>
                     </Button>
@@ -191,9 +191,8 @@ export default function BlogPage() {
           {/* Blog Posts Grid */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredPosts.length > 0 ? filteredPosts.map((post, index) => {
-              const postData = post.attributes
-              const imageUrl = postData.image?.data ? 
-                getStrapiMedia(postData.image) : 
+              const imageUrl = post.image ? 
+                getStrapiMedia(post.image) : 
                 "/placeholder.svg?height=600&width=800"
               
               return (
@@ -205,13 +204,13 @@ export default function BlogPage() {
                   className="bg-gray-900 rounded-lg overflow-hidden border border-gray-800"
                 >
                   <div className="relative h-48">
-                    <Image src={imageUrl} alt={postData.title} fill className="object-cover" />
+                    <Image src={imageUrl} alt={post.title} fill className="object-cover" />
                   </div>
                   <div className="p-6">
                     <div className="flex items-center text-gray-400 text-xs mb-3">
                       <div className="flex items-center mr-3">
                         <Calendar className="h-3 w-3 mr-1" />
-                        <span>{new Date(postData.Published).toLocaleDateString('en-US', {
+                        <span>{new Date(post.published || Date.now()).toLocaleDateString('en-US', {
                           year: 'numeric',
                           month: 'long',
                           day: 'numeric'
@@ -219,17 +218,19 @@ export default function BlogPage() {
                       </div>
                       <div className="flex items-center">
                         <Tag className="h-3 w-3 mr-1" />
-                        <span>{postData.category?.data?.attributes?.name || "Uncategorized"}</span>
+                        <span>{post.categories && post.categories.length > 0 
+                          ? post.categories[0]?.name 
+                          : "Uncategorized"}</span>
                       </div>
                     </div>
-                    <h3 className="text-xl font-bold mb-3">{postData.title}</h3>
-                    <p className="text-gray-300 mb-4 line-clamp-3">{postData.excerpt}</p>
+                    <h3 className="text-xl font-bold mb-3">{post.title}</h3>
+                    <p className="text-gray-300 mb-4 line-clamp-3">{post.excerpt}</p>
                     <div className="flex items-center text-gray-400 text-sm mb-4">
                       <User className="h-4 w-4 mr-1" />
-                      <span>{postData.author || "Admin"}</span>
+                      <span>{post.author || "Admin"}</span>
                     </div>
                     <Button asChild variant="outline" className="w-full border-gold text-gold hover:bg-gold/10">
-                      <Link href={`/blog/${postData.slug}`}>Read Article</Link>
+                      <Link href={`/blog/${post.slug}`}>Read Article</Link>
                     </Button>
                   </div>
                 </motion.div>

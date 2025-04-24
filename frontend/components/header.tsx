@@ -42,7 +42,7 @@ export function Header({ global }: { global?: GlobalData }) {
       <div className="container mx-auto px-4 flex justify-between items-center">
         <Link href="/" className="flex items-center">
           <h1 className="text-2xl font-playfair font-bold">
-            <span className="gold-gradient">{global?.attributes?.companyName || "Empire Link"}</span> Limo
+            <span className="gold-gradient">{global?.companyName || "Empire Link"}</span> Limo
           </h1>
         </Link>
 
@@ -57,7 +57,7 @@ export function Header({ global }: { global?: GlobalData }) {
             <Link href="/booking">Book Now</Link>
           </Button>
           <Button asChild className="bg-gold hover:bg-gold-light text-black">
-            <a href={`tel:${global?.attributes?.phone || "+1234567890"}`} className="flex items-center gap-2">
+            <a href={`tel:${global?.phone || "+1234567890"}`} className="flex items-center gap-2">
               <Phone size={16} />
               <span className="hidden lg:inline">Call Us</span>
             </a>
@@ -98,7 +98,7 @@ export function Header({ global }: { global?: GlobalData }) {
                   </Link>
                 </Button>
                 <Button asChild className="bg-gold hover:bg-gold-light text-black w-full">
-                  <a href={`tel:${global?.attributes?.phone || "+1234567890"}`} className="flex items-center justify-center gap-2">
+                  <a href={`tel:${global?.phone || "+1234567890"}`} className="flex items-center justify-center gap-2">
                     <Phone size={16} />
                     <span>Call Us</span>
                   </a>

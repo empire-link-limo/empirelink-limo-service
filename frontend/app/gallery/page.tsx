@@ -1,4 +1,3 @@
-// app/gallery/page.tsx
 "use client"
 
 import { useState, useEffect } from "react"
@@ -29,7 +28,7 @@ export default function GalleryPage() {
         setGalleryPage(galleryPageData)
         setGalleryImages(galleryImagesData)
         
-        const categoryNames = categoriesData.map((cat: CategoryData) => cat.attributes.name)
+        const categoryNames = categoriesData.map((cat: CategoryData) => cat.name)
         setCategories(["All", ...categoryNames])
       } catch (error) {
         console.error("Error fetching gallery data:", error)
@@ -40,20 +39,21 @@ export default function GalleryPage() {
   }, [])
   
   // Default values if data is still loading
-  const heroData = galleryPage?.attributes?.hero || {
+  const heroData = galleryPage?.HeroSection || {
     title: "Our Gallery",
     description: "Explore our collection of luxury vehicles, corporate events, and premium services",
     backgroundImage: null
   }
   
   // Get image URL
-  const heroImageUrl = heroData?.backgroundImage?.data ? 
+  const heroImageUrl = heroData?.backgroundImage ? 
     getStrapiMedia(heroData.backgroundImage) : 
     "/placeholder.svg?height=800&width=1600"
   
   // Filter images based on selected category
   const filteredImages = galleryImages.filter(
-    (image) => selectedCategory === "All" || image.attributes.category?.data?.attributes?.name === selectedCategory
+    (image) => selectedCategory === "All" || 
+    (image.categories && image.categories.some(cat => cat.name === selectedCategory))
   )
   
   // Open lightbox with specific image
@@ -89,11 +89,11 @@ export default function GalleryPage() {
   return (
     <div className="pt-20" onKeyDown={handleKeyDown} tabIndex={0}>
       {/* SEO */}
-      {galleryPage?.attributes?.seo && (
+      {galleryPage?.SEO && (
         <Seo seo={{
-          metaTitle: galleryPage.attributes.seo.metaTitle || "Gallery | Empirelink Limo Service",
-          metaDescription: galleryPage.attributes.seo.metaDescription,
-          shareImage: galleryPage.attributes.seo.metaImage,
+          metaTitle: galleryPage.SEO.metaTitle || "Gallery | Empirelink Limo Service",
+          metaDescription: galleryPage.SEO.metaDescription,
+          shareImage: galleryPage.SEO.metaImage,
         }} />
       )}
       
@@ -154,10 +154,14 @@ export default function GalleryPage() {
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
           >
             {filteredImages.length > 0 ? filteredImages.map((image, index) => {
-              const imageData = image.attributes
-              const imageUrl = imageData.image?.data ? 
-                getStrapiMedia(imageData.image) : 
+              const imageUrl = image.image ? 
+                getStrapiMedia(image.image) : 
                 "/placeholder.svg?height=800&width=1200"
+              
+              // Get category name if available
+              const categoryName = image.categories && image.categories.length > 0 
+                ? image.categories[0].name 
+                : "Vehicle";
               
               return (
                 <motion.div
@@ -171,16 +175,16 @@ export default function GalleryPage() {
                   <div className="relative aspect-[4/3] overflow-hidden">
                     <Image
                       src={imageUrl}
-                      alt={imageData.title}
+                      alt={image.title}
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
                       <div className="p-4 w-full">
                         <div className="bg-gold/20 text-gold px-2 py-1 rounded text-xs inline-block mb-2">
-                          {imageData.category?.data?.attributes?.name || "Vehicle"}
+                          {categoryName}
                         </div>
-                        <h3 className="text-white font-bold">{imageData.title}</h3>
+                        <h3 className="text-white font-bold">{image.title}</h3>
                       </div>
                     </div>
                   </div>
@@ -259,10 +263,10 @@ export default function GalleryPage() {
               <div className="relative flex-1 overflow-hidden rounded-lg">
                 <div className="relative h-full w-full">
                   <Image
-                    src={filteredImages[currentImageIndex].attributes.image?.data ? 
-                      getStrapiMedia(filteredImages[currentImageIndex].attributes.image) : 
+                    src={filteredImages[currentImageIndex].image ? 
+                      getStrapiMedia(filteredImages[currentImageIndex].image) : 
                       "/placeholder.svg?height=800&width=1200"}
-                    alt={filteredImages[currentImageIndex].attributes.title}
+                    alt={filteredImages[currentImageIndex].title}
                     fill
                     className="object-contain"
                   />
@@ -274,10 +278,13 @@ export default function GalleryPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <span className="bg-gold/20 text-gold px-2 py-1 rounded text-xs">
-                      {filteredImages[currentImageIndex].attributes.category?.data?.attributes?.name || "Vehicle"}
+                      {filteredImages[currentImageIndex].categories && 
+                       filteredImages[currentImageIndex].categories.length > 0 
+                        ? filteredImages[currentImageIndex].categories[0].name 
+                        : "Vehicle"}
                     </span>
-                    <h3 className="text-white font-bold mt-2">{filteredImages[currentImageIndex].attributes.title}</h3>
-                    <p className="text-gray-300 mt-1">{filteredImages[currentImageIndex].attributes.description}</p>
+                    <h3 className="text-white font-bold mt-2">{filteredImages[currentImageIndex].title}</h3>
+                    <p className="text-gray-300 mt-1">{filteredImages[currentImageIndex].description}</p>
                   </div>
                   <div className="text-gray-400 text-sm">
                     {currentImageIndex + 1} / {filteredImages.length}

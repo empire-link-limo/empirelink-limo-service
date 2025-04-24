@@ -1,4 +1,3 @@
-// app/contact/page.tsx
 "use client"
 
 import { useState, useEffect } from "react"
@@ -81,47 +80,47 @@ export default function ContactPage() {
   }
   
   // Default values if data is still loading
-  const heroData = contactPage?.attributes?.hero || {
+  const heroData = contactPage?.HeroSection || {
     title: "Contact Us",
     description: "Get in touch with our team to discuss your transportation needs",
     backgroundImage: null
   }
   
-  const formSection = contactPage?.attributes?.formSection || {
+  const formSection = contactPage?.FormSection || {
     title: "Send Us a Message",
     successMessage: "Thank you for contacting us. A member of our team will get back to you shortly."
   }
   
-  const mapSection = contactPage?.attributes?.mapSection || {
+  const mapSection = contactPage?.MapSection || {
     title: "Our Location",
     description: "Visit our office or use our convenient booking system to reserve your transportation"
   }
   
   // Get image URLs
-  const heroImageUrl = heroData?.backgroundImage?.data ? 
+  const heroImageUrl = heroData?.backgroundImage ? 
     getStrapiMedia(heroData.backgroundImage) : 
     "/placeholder.svg?height=800&width=1600"
   
   // Get contact details from global data
   const contactDetails = {
-    phone: globalData?.attributes?.phone || "+1 (234) 567-8900",
-    email: globalData?.attributes?.email || "info@luxurylimo.com",
-    address: globalData?.attributes?.address || 
+    phone: globalData?.phone || "+1 (234) 567-8900",
+    email: globalData?.email || "info@luxurylimo.com",
+    address: globalData?.address || 
       "123 Luxury Drive, Suite 400\nNew York, NY 10001",
-    hours: globalData?.attributes?.officeHours || "Monday-Friday: 9am-6pm"
+    hours: globalData?.officeHours || "Monday-Friday: 9am-6pm"
   }
   
   // Extract social links
-  const socialLinks: SocialLink[] = globalData?.attributes?.socialLinks || []
+  const socialLinks: SocialLink[] = globalData?.socialLinks || []
 
   return (
     <div className="pt-20">
       {/* SEO */}
-      {contactPage?.attributes?.seo && (
+      {contactPage?.SEO && (
         <Seo seo={{
-          metaTitle: contactPage.attributes.seo.metaTitle || "Contact Us | Empirelink Limo Service",
-          metaDescription: contactPage.attributes.seo.metaDescription,
-          shareImage: contactPage.attributes.seo.metaImage,
+          metaTitle: contactPage.SEO.metaTitle || "Contact Us | Empirelink Limo Service",
+          metaDescription: contactPage.SEO.metaDescription,
+          shareImage: contactPage.SEO.metaImage,
         }} />
       )}
       

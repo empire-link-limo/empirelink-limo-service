@@ -32,16 +32,16 @@ export async function getGlobalData(): Promise<GlobalData> {
 export async function getHomepage(): Promise<HomepageData> {
   const homepageRes = await fetchAPI("/homepage", {
     populate: {
-      hero: {
+      HeroSection: {
         populate: ["backgroundImage"],
       },
-      fleetSection: true,
-      servicesSection: true,
-      testimonialsSection: true,
-      ctaSection: {
+      FleetSection: true,
+      ServicesSection: true,
+      TestimonialsSection: true,
+      CTASection: {
         populate: ["backgroundImage"],
       },
-      seo: {
+      SEO: {
         populate: ["metaImage"],
       },
     },
@@ -121,8 +121,8 @@ export async function getTeamMembers(): Promise<TeamMemberData[]> {
 // Blog Posts
 export async function getAllPosts(pageSize: number = 10, page: number = 1): Promise<BlogPostsResponse> {
   const postsRes = await fetchAPI("/blog-posts", {
-    populate: ["image", "category"],
-    sort: "Published:desc",
+    populate: ["image", "categories"],
+    sort: "published:desc",
     pagination: {
       page,
       pageSize,
@@ -138,7 +138,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPostData | null> 
         $eq: slug,
       },
     },
-    populate: ["image", "category", "author", "seo.metaImage"],
+    populate: ["image", "categories", "author", "seo.metaImage"],
   });
   
   return postsRes.data.length > 0 ? postsRes.data[0] : null;
@@ -155,7 +155,7 @@ export async function getCategories(): Promise<CategoryData[]> {
 // Gallery Images
 export async function getGalleryImages(): Promise<GalleryImageData[]> {
   const galleryRes = await fetchAPI("/gallery-images", {
-    populate: ["image", "category"],
+    populate: ["image", "categories"],
   });
   return galleryRes.data;
 }
@@ -164,24 +164,21 @@ export async function getGalleryImages(): Promise<GalleryImageData[]> {
 export async function getAboutPage(): Promise<AboutPageData> {
   const aboutRes = await fetchAPI("/about-page", {
     populate: {
-      hero: {
+      HeroSection: {
         populate: ["backgroundImage"],
       },
-      storySection: {
+      StorySection: {
         populate: ["image"],
       },
-      valuesSection: {
-        populate: ["values"],
+      ValuesSection: true,
+      TeamSection: {
+        populate: ["team_members.image"],
       },
-      teamSection: true,
-      ctaSection: {
-        populate: ["image"],
+      CTASection: {
+        populate: ["backgroundImage"],
       },
-      seo: {
+      SEO: {
         populate: ["metaImage"],
-      },
-      values: {
-        populate: "*",
       },
     },
   });
@@ -191,10 +188,13 @@ export async function getAboutPage(): Promise<AboutPageData> {
 export async function getFleetPage(): Promise<FleetPageData> {
   const fleetRes = await fetchAPI("/fleet-page", {
     populate: {
-      hero: {
+      HeroSection: {
         populate: ["backgroundImage"],
       },
-      seo: {
+      FleetSettings: {
+        populate: ["featuredVehicles.image", "featuredVehicles.features"],
+      },
+      SEO: {
         populate: ["metaImage"],
       },
     },
@@ -205,14 +205,16 @@ export async function getFleetPage(): Promise<FleetPageData> {
 export async function getServicesPage(): Promise<ServicesPageData> {
   const servicesRes = await fetchAPI("/services-page", {
     populate: {
-      hero: {
+      HeroSection: {
         populate: ["backgroundImage"],
       },
-      whyChooseUsSection: true,
-      ctaSection: {
-        populate: ["image"],
+      WhyChooseUsSection: {
+        populate: ["benefit"],
       },
-      seo: {
+      CTASection: {
+        populate: ["backgroundImage"],
+      },
+      SEO: {
         populate: ["metaImage"],
       },
     },
@@ -223,10 +225,14 @@ export async function getServicesPage(): Promise<ServicesPageData> {
 export async function getBlogPage(): Promise<BlogPageData> {
   const blogRes = await fetchAPI("/blog-page", {
     populate: {
-      hero: {
+      HeroSection: {
         populate: ["backgroundImage"],
       },
-      seo: {
+      BlogSettings: true,
+      NewsletterSection: {
+        populate: ["image"],
+      },
+      SEO: {
         populate: ["metaImage"],
       },
     },
@@ -237,12 +243,12 @@ export async function getBlogPage(): Promise<BlogPageData> {
 export async function getContactPage(): Promise<ContactPageData> {
   const contactPageRes = await fetchAPI("/contact-page", {
     populate: {
-      hero: {
+      HeroSection: {
         populate: ["backgroundImage"],
       },
-      formSection: true,
-      mapSection: true,
-      seo: {
+      FormSection: true,
+      MapSection: true,
+      SEO: {
         populate: ["metaImage"],
       },
     },
@@ -253,10 +259,11 @@ export async function getContactPage(): Promise<ContactPageData> {
 export async function getGalleryPage(): Promise<GalleryPageData> {
   const galleryRes = await fetchAPI("/gallery-page", {
     populate: {
-      hero: {
+      HeroSection: {
         populate: ["backgroundImage"],
       },
-      seo: {
+      GallerySettings: true,
+      SEO: {
         populate: ["metaImage"],
       },
     },
@@ -266,7 +273,7 @@ export async function getGalleryPage(): Promise<GalleryPageData> {
 
 export async function getBookingPage(): Promise<BookingPageData> {
   const bookingPageRes = await fetchAPI("/booking-page", {
-    populate: ["contactInfo", "seo.metaImage"],
+    populate: ["ContactInfo", "SEO.metaImage"],
   });
   return bookingPageRes.data;
 }

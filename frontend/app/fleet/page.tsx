@@ -1,4 +1,3 @@
-// app/fleet/page.tsx
 "use client"
 
 import { useState, useEffect } from "react"
@@ -38,8 +37,8 @@ export default function FleetPage() {
         if (vehiclesData && vehiclesData.length > 0) {
           setSelectedVehicle(vehiclesData[0])
           
-          if (vehiclesData[0].attributes.image?.data) {
-            setSelectedImage(getStrapiMedia(vehiclesData[0].attributes.image))
+          if (vehiclesData[0].image) {
+            setSelectedImage(getStrapiMedia(vehiclesData[0].image))
           }
         }
       } catch (error) {
@@ -51,25 +50,25 @@ export default function FleetPage() {
   }, [])
   
   // Default values if data is still loading
-  const heroData = fleetPage?.attributes?.hero || {
+  const heroData = fleetPage?.HeroSection || {
     title: "Our Luxury Fleet",
     description: "Explore our collection of premium vehicles, each maintained to the highest standards of luxury and comfort",
     backgroundImage: null
   }
   
   // Get image URL
-  const heroImageUrl = heroData?.backgroundImage?.data ? 
+  const heroImageUrl = heroData?.backgroundImage ? 
     getStrapiMedia(heroData.backgroundImage) : 
     "/placeholder.svg?height=800&width=1600"
 
   return (
     <div className="pt-20">
       {/* SEO */}
-      {fleetPage?.attributes?.seo && (
+      {fleetPage?.SEO && (
         <Seo seo={{
-          metaTitle: fleetPage.attributes.seo.metaTitle || "Our Fleet | Empirelink Limo Service",
-          metaDescription: fleetPage.attributes.seo.metaDescription,
-          shareImage: fleetPage.attributes.seo.metaImage,
+          metaTitle: fleetPage.SEO.metaTitle || "Our Fleet | Empirelink Limo Service",
+          metaDescription: fleetPage.SEO.metaDescription,
+          shareImage: fleetPage.SEO.metaImage,
         }} />
       )}
       
@@ -89,9 +88,8 @@ export default function FleetPage() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {vehicles && vehicles.length > 0 ? vehicles.map((vehicle, index) => {
-            const vehicleData = vehicle.attributes
-            const imageUrl = vehicleData.image?.data ? 
-              getStrapiMedia(vehicleData.image) : 
+            const imageUrl = vehicle.image ? 
+              getStrapiMedia(vehicle.image) : 
               "/placeholder.svg?height=600&width=800"
             
             return (
@@ -103,15 +101,15 @@ export default function FleetPage() {
                 className="bg-gray-900 rounded-lg overflow-hidden border border-gray-800 vehicle-card"
               >
                 <div className="relative h-64">
-                  <Image src={imageUrl} alt={vehicleData.name} fill className="object-cover" />
+                  <Image src={imageUrl} alt={vehicle.name} fill className="object-cover" />
                 </div>
                 <div className="p-6">
-                  <h3 className="text-xl font-bold mb-2">{vehicleData.name}</h3>
+                  <h3 className="text-xl font-bold mb-2">{vehicle.name}</h3>
                   <div className="flex items-center text-gold mb-4">
                     <Users className="h-5 w-5 mr-2" />
-                    <span>{vehicleData.capacity}</span>
+                    <span>{vehicle.capacity}</span>
                   </div>
-                  <p className="text-gray-400 mb-6">{vehicleData.description}</p>
+                  <p className="text-gray-400 mb-6">{vehicle.description}</p>
                   <div className="flex flex-col sm:flex-row gap-3">
                     <Dialog>
                       <DialogTrigger asChild>
@@ -120,8 +118,8 @@ export default function FleetPage() {
                           className="flex-1 border-gold text-gold hover:bg-gold/10"
                           onClick={() => {
                             setSelectedVehicle(vehicle)
-                            if (vehicleData.image?.data) {
-                              setSelectedImage(getStrapiMedia(vehicleData.image))
+                            if (vehicle.image) {
+                              setSelectedImage(getStrapiMedia(vehicle.image))
                             }
                           }}
                         >
@@ -130,21 +128,21 @@ export default function FleetPage() {
                       </DialogTrigger>
                       <DialogContent className="sm:max-w-[700px] bg-gray-900 border-gray-800">
                         <DialogHeader>
-                          <DialogTitle className="text-2xl font-bold">{selectedVehicle?.attributes?.name}</DialogTitle>
-                          <DialogDescription className="text-gray-400">{selectedVehicle?.attributes?.description}</DialogDescription>
+                          <DialogTitle className="text-2xl font-bold">{selectedVehicle?.name}</DialogTitle>
+                          <DialogDescription className="text-gray-400">{selectedVehicle?.description}</DialogDescription>
                         </DialogHeader>
                         <div className="mt-4">
                           <div className="relative h-80 mb-4">
                             <Image
                               src={selectedImage || "/placeholder.svg"}
-                              alt={selectedVehicle?.attributes?.name || "Vehicle"}
+                              alt={selectedVehicle?.name || "Vehicle"}
                               fill
                               className="object-cover rounded-lg"
                             />
                           </div>
                           <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-                            {selectedVehicle?.attributes?.gallery?.data?.map((img, i) => {
-                              const galleryImageUrl = getStrapiMedia({ data: { attributes: { url: img.attributes.url } } })
+                            {selectedVehicle?.gallery?.map((img, i) => {
+                              const galleryImageUrl = getStrapiMedia(img)
                               return (
                                 <div
                                   key={i}
@@ -167,17 +165,17 @@ export default function FleetPage() {
                                 <Users className="h-5 w-5 text-gold mr-2" />
                                 Capacity
                               </h4>
-                              <p className="text-gray-300 mb-4">{selectedVehicle?.attributes?.capacity}</p>
+                              <p className="text-gray-300 mb-4">{selectedVehicle?.capacity}</p>
 
                               <h4 className="text-lg font-bold mb-3 flex items-center">
                                 <Award className="h-5 w-5 text-gold mr-2" />
                                 Premium Features
                               </h4>
                               <ul className="space-y-2">
-                                {selectedVehicle?.attributes?.features?.data?.map((feature, i) => (
+                                {selectedVehicle?.features?.map((feature, i) => (
                                   <li key={i} className="flex items-start">
                                     <Check className="h-5 w-5 text-gold mr-2 mt-0.5" />
-                                    <span className="text-gray-300">{feature.attributes.name}</span>
+                                    <span className="text-gray-300">{feature.name}</span>
                                   </li>
                                 ))}
                               </ul>

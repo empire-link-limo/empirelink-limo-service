@@ -1,4 +1,3 @@
-// app/services/page.tsx
 "use client"
 
 import { useState, useEffect } from "react"
@@ -33,32 +32,32 @@ export default function ServicesPage() {
   }, [])
   
   // Default values if data is still loading
-  const heroData = servicesPage?.attributes?.hero || {
+  const heroData = servicesPage?.HeroSection || {
     title: "Our Services",
     description: "Comprehensive transportation solutions tailored to your corporate needs",
     backgroundImage: null
   }
   
-  const whyChooseUs = servicesPage?.attributes?.whyChooseUsSection || {
+  const whyChooseUs = servicesPage?.WhyChooseUsSection || {
     title: "Why Choose Luxury Limo",
     description: "What sets our service apart from the rest"
   }
   
-  const ctaData = servicesPage?.attributes?.ctaSection || {
+  const ctaData = servicesPage?.CTASection || {
     title: "Ready to Elevate Your Corporate Transportation?",
     description: "Contact us today to discuss your transportation needs and discover how we can tailor our services to your requirements.",
     buttonText: "Book Now",
     buttonUrl: "/booking",
-    image: null
+    backgroundImage: null
   }
   
   // Get image URLs
-  const heroImageUrl = heroData?.backgroundImage?.data ? 
+  const heroImageUrl = heroData?.backgroundImage ? 
     getStrapiMedia(heroData.backgroundImage) : 
     "/placeholder.svg?height=800&width=1600"
     
-  const ctaImageUrl = ctaData?.image?.data ? 
-    getStrapiMedia(ctaData.image) : 
+  const ctaImageUrl = ctaData?.backgroundImage ? 
+    getStrapiMedia(ctaData.backgroundImage) : 
     "/placeholder.svg?height=600&width=800"
   
   // Map icon names to components
@@ -79,11 +78,11 @@ export default function ServicesPage() {
   return (
     <div className="pt-20">
       {/* SEO */}
-      {servicesPage?.attributes?.seo && (
+      {servicesPage?.SEO && (
         <Seo seo={{
-          metaTitle: servicesPage.attributes.seo.metaTitle || "Our Services | Empirelink Limo Service",
-          metaDescription: servicesPage.attributes.seo.metaDescription,
-          shareImage: servicesPage.attributes.seo.metaImage,
+          metaTitle: servicesPage.SEO.metaTitle || "Our Services | Empirelink Limo Service",
+          metaDescription: servicesPage.SEO.metaDescription,
+          shareImage: servicesPage.SEO.metaImage,
         }} />
       )}
       
@@ -118,13 +117,12 @@ export default function ServicesPage() {
         <div className="container mx-auto px-4">
           <div className="space-y-24">
             {services && services.length > 0 ? services.map((service, index) => {
-              const serviceData = service.attributes
-              const imageUrl = serviceData.image?.data ? 
-                getStrapiMedia(serviceData.image) : 
+              const imageUrl = service.image ? 
+                getStrapiMedia(service.image) : 
                 "/placeholder.svg?height=600&width=800"
               
               return (
-                <div key={service.id} id={serviceData.slug} className="scroll-mt-24">
+                <div key={service.id} id={service.slug} className="scroll-mt-24">
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -134,16 +132,16 @@ export default function ServicesPage() {
                   >
                     <div className={index % 2 === 1 ? "md:col-start-2" : ""}>
                       <div className="flex items-center mb-4">
-                        {getIconComponent(serviceData.icon)}
-                        <h2 className="text-2xl md:text-3xl font-bold ml-4">{serviceData.title}</h2>
+                        {getIconComponent(service.icon)}
+                        <h2 className="text-2xl md:text-3xl font-bold ml-4">{service.title}</h2>
                       </div>
                       <div className="h-1 w-20 bg-gold mb-6"></div>
-                      <p className="text-gray-300 mb-6">{serviceData.description}</p>
+                      <p className="text-gray-300 mb-6">{service.description}</p>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
-                        {serviceData.features?.data ? serviceData.features.data.map((feature, i) => (
+                        {service.features ? service.features.map((feature, i) => (
                           <div key={i} className="flex items-start">
                             <Check className="h-5 w-5 text-gold mr-2 mt-0.5" />
-                            <span className="text-gray-300">{feature.attributes.name}</span>
+                            <span className="text-gray-300">{feature.name}</span>
                           </div>
                         )) : Array(6).fill(0).map((_, i) => (
                           <div key={i} className="flex items-start">
@@ -160,7 +158,7 @@ export default function ServicesPage() {
                       <div className="relative h-[400px] rounded-lg overflow-hidden">
                         <Image
                           src={imageUrl}
-                          alt={serviceData.title}
+                          alt={service.title}
                           fill
                           className="object-cover"
                         />

@@ -13,7 +13,7 @@ export async function generateStaticParams() {
   const services = await getAllServices();
   
   return services.map((service) => ({
-    slug: service.attributes.slug,
+    slug: service.slug,
   }));
 }
 
@@ -25,19 +25,18 @@ export default async function ServiceDetail({ params }: { params: { slug: string
     return notFound();
   }
   
-  const serviceData = service.attributes;
-  const imageUrl = serviceData.image?.data ? 
-    getStrapiMedia(serviceData.image) : 
+  const imageUrl = service.image ? 
+    getStrapiMedia(service.image) : 
     "/placeholder.svg?height=800&width=1200";
   
   return (
     <div className="pt-20">
       {/* SEO */}
-      {serviceData.seo && (
+      {service.seo && (
         <Seo seo={{
-          metaTitle: serviceData.seo.metaTitle || `${serviceData.title} | Empirelink Limo Services`,
-          metaDescription: serviceData.seo.metaDescription || serviceData.description,
-          shareImage: serviceData.seo.metaImage || serviceData.image,
+          metaTitle: service.seo.metaTitle || `${service.title} | Empirelink Limo Services`,
+          metaDescription: service.seo.metaDescription || service.description,
+          shareImage: service.seo.metaImage || service.image,
         }} />
       )}
       
@@ -49,18 +48,18 @@ export default async function ServiceDetail({ params }: { params: { slug: string
         
         <div className="grid md:grid-cols-2 gap-12">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">{serviceData.title}</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">{service.title}</h1>
             <div className="h-1 w-20 bg-gold mb-6"></div>
             
-            <p className="text-gray-300 text-lg mb-8">{serviceData.description}</p>
+            <p className="text-gray-300 text-lg mb-8">{service.description}</p>
             
             <h2 className="text-xl font-bold mb-4">Service Features</h2>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
-              {serviceData.features?.data?.map((feature) => (
+              {service.features?.map((feature) => (
                 <div key={feature.id} className="flex items-start">
                   <Check className="h-5 w-5 text-gold mr-2 mt-0.5" />
-                  <span className="text-gray-300">{feature.attributes.name}</span>
+                  <span className="text-gray-300">{feature.name}</span>
                 </div>
               ))}
             </div>
@@ -68,7 +67,7 @@ export default async function ServiceDetail({ params }: { params: { slug: string
             <div className="bg-gray-900 p-6 rounded-lg border border-gray-800 mb-8">
               <h3 className="text-xl font-bold mb-4">Book This Service</h3>
               <p className="text-gray-300 mb-6">
-                Experience our premium {serviceData.title} service with professionally trained chauffeurs 
+                Experience our premium {service.title} service with professionally trained chauffeurs 
                 and meticulously maintained luxury vehicles.
               </p>
               <Button asChild className="w-full bg-gold hover:bg-gold-light text-black">
@@ -90,7 +89,7 @@ export default async function ServiceDetail({ params }: { params: { slug: string
             <div className="relative aspect-[4/3] rounded-lg overflow-hidden mb-6">
               <Image
                 src={imageUrl}
-                alt={serviceData.title}
+                alt={service.title}
                 fill
                 className="object-cover"
                 priority
@@ -100,7 +99,7 @@ export default async function ServiceDetail({ params }: { params: { slug: string
             <div className="bg-gray-900 p-6 rounded-lg border border-gray-800">
               <h3 className="text-xl font-bold mb-4 flex items-center">
                 <Calendar className="h-5 w-5 text-gold mr-2" />
-                Why Choose Our {serviceData.title}
+                Why Choose Our {service.title}
               </h3>
               <ul className="space-y-4 text-gray-300">
                 <li className="flex items-start">
