@@ -4,7 +4,8 @@
   "info": {
     "singularName": "category",
     "pluralName": "categories",
-    "displayName": "Category"
+    "displayName": "Category",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -19,9 +20,9 @@
       "targetField": "name",
       "required": true
     },
-    "blog_post": {
+    "blog_posts": {
       "type": "relation",
-      "relation": "manyToOne",
+      "relation": "manyToMany",
       "target": "api::blog-post.blog-post",
       "inversedBy": "categories"
     },
@@ -29,7 +30,7 @@
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::gallery-image.gallery-image",
-      "mappedBy": "categories"
+      "inversedBy": "categories"
     }
   }
 }

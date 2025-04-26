@@ -95,6 +95,11 @@ export function Footer({ global }: { global?: GlobalData }) {
                 </Link>
               </li>
               <li>
+                <Link href="/gallery" className="text-gray-400 hover:text-gold transition-colors">
+                  Gallery
+                </Link>
+              </li>
+              <li>
                 <Link href="/blog" className="text-gray-400 hover:text-gold transition-colors">
                   Blog
                 </Link>

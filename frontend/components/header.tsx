@@ -28,6 +28,7 @@ export function Header({ global }: { global?: GlobalData }) {
     { href: "/about", label: "About" },
     { href: "/fleet", label: "Fleet" },
     { href: "/services", label: "Services" },
+    { href: "/gallery", label: "Gallery" },
     { href: "/blog", label: "Blog" },
     { href: "/contact", label: "Contact" },
   ]

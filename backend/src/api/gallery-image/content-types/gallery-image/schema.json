@@ -23,14 +23,14 @@
       "multiple": false,
       "required": true
     },
+    "description": {
+      "type": "text"
+    },
     "categories": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::category.category",
-      "inversedBy": "gallery_images"
-    },
-    "description": {
-      "type": "text"
+      "mappedBy": "gallery_images"
     }
   }
 }

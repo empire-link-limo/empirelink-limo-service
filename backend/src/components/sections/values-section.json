@@ -1,7 +1,8 @@
 {
   "collectionName": "components_sections_values_sections",
   "info": {
-    "displayName": "Values Section"
+    "displayName": "Values Section",
+    "description": ""
   },
   "options": {},
   "attributes": {
@@ -12,8 +13,10 @@
     "description": {
       "type": "text"
     },
-    "icon": {
-      "type": "string"
+    "valueItems": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.value-item"
     }
   }
 }

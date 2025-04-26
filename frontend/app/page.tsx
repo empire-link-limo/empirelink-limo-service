@@ -7,14 +7,14 @@ import { motion } from "framer-motion"
 import { ChevronRight, ChevronLeft, Star, Award, Shield, Clock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { getStrapiMedia } from "@/lib/api"
-import { getHomepage, getAllVehicles, getAllServices, getTestimonials } from "@/lib/strapi"
+import { getHomepage, getFeaturedVehicles, getFeaturedServices, getTestimonials } from "@/lib/strapi"
 import Seo from "@/components/seo"
 import { HomepageData, VehicleData, ServiceData, TestimonialData } from "@/lib/types"
 
 export default function Home() {
   const [homepage, setHomepage] = useState<HomepageData | null>(null)
-  const [vehicles, setVehicles] = useState<VehicleData[]>([])
-  const [services, setServices] = useState<ServiceData[]>([])
+  const [featuredVehicles, setFeaturedVehicles] = useState<VehicleData[]>([])
+  const [featuredServices, setFeaturedServices] = useState<ServiceData[]>([])
   const [testimonials, setTestimonials] = useState<TestimonialData[]>([])
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   
@@ -22,13 +22,13 @@ export default function Home() {
     async function fetchData() {
       try {
         const homepageData = await getHomepage()
-        const vehiclesData = await getAllVehicles()
-        const servicesData = await getAllServices()
+        const vehiclesData = await getFeaturedVehicles(5) // Get up to 5 featured vehicles
+        const servicesData = await getFeaturedServices(3) // Get up to 3 featured services
         const testimonialsData = await getTestimonials()
         
         setHomepage(homepageData)
-        setVehicles(vehiclesData)
-        setServices(servicesData?.length > 0 ? servicesData.slice(0, 3) : [])
+        setFeaturedVehicles(vehiclesData)
+        setFeaturedServices(servicesData)
         setTestimonials(testimonialsData)
       } catch (error) {
         console.error("Error fetching homepage data:", error)
@@ -74,8 +74,11 @@ export default function Home() {
   const ctaSection = homepage?.CTASection || {
     title: "Ready to Experience Premium Corporate Transportation?",
     description: "Book your luxury transportation service today and elevate your corporate travel experience.",
-    buttonText: "Book Now",
-    buttonUrl: "/booking"
+    primaryButtonText: "Book Now",
+    primaryButtonUrl: "/booking",
+    secondaryButtonText: "Contact Us",
+    secondaryButtonUrl: "/contact",
+    backgroundImage: null
   }
   
   // Get image URLs
@@ -83,8 +86,8 @@ export default function Home() {
     getStrapiMedia(homepage.HeroSection.backgroundImage) : 
     "/placeholder.svg?height=1080&width=1920"
     
-  const ctaImageUrl = homepage?.CTASection?.backgroundImage ?
-    getStrapiMedia(homepage.CTASection.backgroundImage) : 
+  const ctaImageUrl = ctaSection?.backgroundImage ?
+    getStrapiMedia(ctaSection.backgroundImage) : 
     "/placeholder.svg?height=800&width=1600"
 
   return (
@@ -157,7 +160,7 @@ export default function Home() {
             </button>
 
             <div ref={scrollContainerRef} className="flex overflow-x-auto gap-6 py-4 px-2 horizontal-scroll">
-              {vehicles && vehicles.length > 0 ? vehicles.map((vehicle) => {
+              {featuredVehicles && featuredVehicles.length > 0 ? featuredVehicles.map((vehicle) => {
                 const imageUrl = vehicle.image ? 
                   getStrapiMedia(vehicle.image) : 
                   "/placeholder.svg?height=600&width=800"
@@ -244,16 +247,21 @@ export default function Home() {
             <p className="text-gray-300 max-w-2xl mx-auto">
               {servicesSection.description}
             </p>
-
-            </div>
+          </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {services && services.length > 0 ? services.map((service, index) => {
+            {featuredServices && featuredServices.length > 0 ? featuredServices.map((service, index) => {
+              // Get icon based on service.icon or fallback to defaults
               const iconName = service.icon || ["Award", "Clock", "Shield"][index % 3]
               let IconComponent = Award
               
               if (iconName === "Clock") IconComponent = Clock
               if (iconName === "Shield") IconComponent = Shield
+              if (iconName === "Briefcase") IconComponent = Award
+              if (iconName === "Plane") IconComponent = Award
+              if (iconName === "Calendar") IconComponent = Clock
+              if (iconName === "MapPin") IconComponent = Shield
+              if (iconName === "Users") IconComponent = Award
               
               return (
                 <motion.div
@@ -270,7 +278,7 @@ export default function Home() {
                   <h3 className="text-xl font-bold mb-4">{service.title}</h3>
                   <p className="text-gray-400 mb-6">{service.description}</p>
                   <Button asChild variant="link" className="text-gold">
-                    <Link href={`/services#${service.slug}`}>
+                    <Link href={`/services/${service.slug}`}>
                       Learn More <ChevronRight className="h-4 w-4 ml-1" />
                     </Link>
                   </Button>
@@ -438,10 +446,14 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Button asChild size="lg" className="bg-gold hover:bg-gold-light text-black text-lg">
-                <Link href={ctaSection.buttonUrl || "/booking"}>{ctaSection.buttonText || "Book Now"}</Link>
+                <Link href={ctaSection.primaryButtonUrl || "/booking"}>
+                  {ctaSection.primaryButtonText || "Book Now"}
+                </Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="border-white hover:bg-white/10 text-lg">
-                <Link href="/contact">Contact Us</Link>
+                <Link href={ctaSection.secondaryButtonUrl || "/contact"}>
+                  {ctaSection.secondaryButtonText || "Contact Us"}
+                </Link>
               </Button>
             </div>
           </div>

@@ -4,7 +4,8 @@
   "info": {
     "singularName": "vehicle",
     "pluralName": "vehicles",
-    "displayName": "Vehicle"
+    "displayName": "Vehicle",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -20,24 +21,26 @@
       "required": true
     },
     "image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
       "allowedTypes": [
         "images",
         "files",
         "videos",
         "audios"
-      ],
-      "type": "media",
-      "multiple": false
+      ]
     },
     "gallery": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
       "allowedTypes": [
         "images",
         "files",
         "videos",
         "audios"
-      ],
-      "type": "media",
-      "multiple": true
+      ]
     },
     "capacity": {
       "type": "text"
@@ -45,16 +48,19 @@
     "description": {
       "type": "text"
     },
-    "features": {
-      "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::feature.feature",
-      "inversedBy": "vehicles"
-    },
     "seo": {
       "type": "component",
       "repeatable": true,
       "component": "shared.seo"
+    },
+    "features": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.feature"
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
     }
   }
 }

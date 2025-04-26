@@ -74,9 +74,11 @@ export interface TestimonialsSection {
 export interface CTASection {
   title: string;
   description?: string;
-  buttonText?: string;
-  buttonUrl?: string;
   backgroundImage?: StrapiImage;
+  primaryButtonText?: string;
+  primaryButtonUrl?: string;
+  secondaryButtonText?: string;
+  secondaryButtonUrl?: string;
 }
 
 export interface HomepageData {
@@ -97,7 +99,8 @@ export interface StorySection {
 }
 
 export interface ValueItem {
-  icon?: string;
+  id: number;
+  icon: string;
   title: string;
   description?: string;
 }
@@ -105,7 +108,7 @@ export interface ValueItem {
 export interface ValuesSection {
   title: string;
   description?: string;
-  icon?: string;
+  valueItems?: ValueItem[];
 }
 
 export interface TeamSection {
@@ -140,6 +143,11 @@ export interface Feature {
   icon?: string;
 }
 
+export interface FeatureComponent {
+  id: number;
+  text: string;
+}
+
 export interface VehicleData {
   id: number;
   name: string;
@@ -148,7 +156,8 @@ export interface VehicleData {
   description?: string;
   image?: StrapiImage;
   gallery?: StrapiImage[];
-  features?: Feature[];
+  features?: FeatureComponent[];
+  featured?: boolean;
   seo?: SEO;
 }
 
@@ -157,7 +166,7 @@ export interface FleetSettings {
   filterByCapacity?: boolean;
   filterByFeatures?: boolean;
   featuredVehicles?: VehicleData[];
-}
+} 
 
 export interface FleetPageData {
   id: number;
@@ -166,7 +175,6 @@ export interface FleetPageData {
   SEO?: SEO;
 }
 
-// Services
 export interface ServiceData {
   id: number;
   title: string;
@@ -174,7 +182,8 @@ export interface ServiceData {
   description?: string;
   icon?: string;
   image?: StrapiImage;
-  features?: Feature[];
+  features?: FeatureComponent[];
+  featured?: boolean;
   seo?: SEO;
 }
 

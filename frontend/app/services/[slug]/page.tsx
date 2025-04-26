@@ -59,7 +59,7 @@ export default async function ServiceDetail({ params }: { params: { slug: string
               {service.features?.map((feature) => (
                 <div key={feature.id} className="flex items-start">
                   <Check className="h-5 w-5 text-gold mr-2 mt-0.5" />
-                  <span className="text-gray-300">{feature.name}</span>
+                  <span className="text-gray-300">{feature.text}</span>
                 </div>
               ))}
             </div>

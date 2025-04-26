@@ -66,6 +66,23 @@ export async function getAllVehicles(): Promise<VehicleData[]> {
   return vehiclesRes.data;
 }
 
+// Get featured vehicles
+export async function getFeaturedVehicles(limit: number = 5): Promise<VehicleData[]> {
+  const vehiclesRes = await fetchAPI("/vehicles", {
+    filters: {
+      featured: {
+        $eq: true,
+      },
+    },
+    populate: ["image", "features", "gallery"],
+    sort: "name:asc",
+    pagination: {
+      pageSize: limit,
+    },
+  });
+  return vehiclesRes.data;
+}
+
 export async function getVehicle(slug: string): Promise<VehicleData | null> {
   const vehiclesRes = await fetchAPI("/vehicles", {
     filters: {
@@ -84,6 +101,23 @@ export async function getAllServices(): Promise<ServiceData[]> {
   const servicesRes = await fetchAPI("/services", {
     populate: ["image", "features"],
     sort: "title:asc",
+  });
+  return servicesRes.data;
+}
+
+// Get featured services
+export async function getFeaturedServices(limit: number = 3): Promise<ServiceData[]> {
+  const servicesRes = await fetchAPI("/services", {
+    filters: {
+      featured: {
+        $eq: true,
+      },
+    },
+    populate: ["image", "features"],
+    sort: "title:asc",
+    pagination: {
+      pageSize: limit,
+    },
   });
   return servicesRes.data;
 }
@@ -170,7 +204,9 @@ export async function getAboutPage(): Promise<AboutPageData> {
       StorySection: {
         populate: ["image"],
       },
-      ValuesSection: true,
+      ValuesSection: {
+        populate: ["valueItems"],
+      },
       TeamSection: {
         populate: ["team_members.image"],
       },

@@ -18,18 +18,21 @@ export default function ServicesPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const servicesPageData = await getServicesPage()
-        const servicesData = await getAllServices()
+        const servicesPageData = await getServicesPage();
+        const servicesData = await getAllServices();
         
-        setServicesPage(servicesPageData)
-        setServices(servicesData)
+        // Sort services by ID in ascending order
+        const sortedServices = [...servicesData].sort((a, b) => a.id - b.id);
+        
+        setServicesPage(servicesPageData);
+        setServices(sortedServices);
       } catch (error) {
-        console.error("Error fetching services page data:", error)
+        console.error("Error fetching services page data:", error);
       }
     }
     
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
   
   // Default values if data is still loading
   const heroData = servicesPage?.HeroSection || {
@@ -46,8 +49,10 @@ export default function ServicesPage() {
   const ctaData = servicesPage?.CTASection || {
     title: "Ready to Elevate Your Corporate Transportation?",
     description: "Contact us today to discuss your transportation needs and discover how we can tailor our services to your requirements.",
-    buttonText: "Book Now",
-    buttonUrl: "/booking",
+    primaryButtonText: "Book Now",
+    primaryButtonUrl: "/booking",
+    secondaryButtonText: "Contact Us",
+    secondaryButtonUrl: "/contact",
     backgroundImage: null
   }
   
@@ -141,7 +146,7 @@ export default function ServicesPage() {
                         {service.features ? service.features.map((feature, i) => (
                           <div key={i} className="flex items-start">
                             <Check className="h-5 w-5 text-gold mr-2 mt-0.5" />
-                            <span className="text-gray-300">{feature.name}</span>
+                            <span className="text-gray-300">{feature.text}</span>
                           </div>
                         )) : Array(6).fill(0).map((_, i) => (
                           <div key={i} className="flex items-start">
@@ -342,10 +347,14 @@ export default function ServicesPage() {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Button asChild className="bg-gold hover:bg-gold-light text-black">
-                    <Link href={ctaData.buttonUrl || "/booking"}>{ctaData.buttonText || "Book Now"}</Link>
+                    <Link href={ctaData.primaryButtonUrl || "/booking"}>
+                      {ctaData.primaryButtonText || "Book Now"}
+                    </Link>
                   </Button>
                   <Button asChild variant="outline" className="border-white hover:bg-white/10">
-                    <Link href="/contact">Contact Us</Link>
+                    <Link href={ctaData.secondaryButtonUrl || "/contact"}>
+                      {ctaData.secondaryButtonText || "Contact Us"}
+                    </Link>
                   </Button>
                 </div>
               </div>

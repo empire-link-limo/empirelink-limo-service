@@ -22,12 +22,6 @@
       "relation": "manyToMany",
       "target": "api::vehicle.vehicle",
       "mappedBy": "features"
-    },
-    "services": {
-      "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::service.service",
-      "mappedBy": "features"
     }
   }
 }

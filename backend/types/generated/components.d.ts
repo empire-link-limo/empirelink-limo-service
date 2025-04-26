@@ -28,15 +28,18 @@ export interface SectionsContactInfo extends Struct.ComponentSchema {
 export interface SectionsCtaSection extends Struct.ComponentSchema {
   collectionName: 'components_sections_cta_sections';
   info: {
+    description: '';
     displayName: 'CTA Section';
   };
   attributes: {
     backgroundImage: Schema.Attribute.Media<
       'images' | 'files' | 'videos' | 'audios'
     >;
-    buttonText: Schema.Attribute.String;
-    buttonUrl: Schema.Attribute.Text;
     description: Schema.Attribute.Text;
+    primaryButtonText: Schema.Attribute.String;
+    primaryButtonUrl: Schema.Attribute.String;
+    secondaryButtonText: Schema.Attribute.String;
+    secondaryButtonUrl: Schema.Attribute.String;
     title: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
@@ -211,12 +214,13 @@ export interface SectionsTestimonialsSection extends Struct.ComponentSchema {
 export interface SectionsValuesSection extends Struct.ComponentSchema {
   collectionName: 'components_sections_values_sections';
   info: {
+    description: '';
     displayName: 'Values Section';
   };
   attributes: {
     description: Schema.Attribute.Text;
-    icon: Schema.Attribute.String;
     title: Schema.Attribute.String & Schema.Attribute.Required;
+    valueItems: Schema.Attribute.Component<'shared.value-item', true>;
   };
 }
 
@@ -241,6 +245,16 @@ export interface SharedBenefits extends Struct.ComponentSchema {
     description: Schema.Attribute.Text;
     icon: Schema.Attribute.String;
     title: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
+export interface SharedFeature extends Struct.ComponentSchema {
+  collectionName: 'components_shared_features';
+  info: {
+    displayName: 'Feature';
+  };
+  attributes: {
+    text: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 
@@ -272,6 +286,18 @@ export interface SharedSocialLink extends Struct.ComponentSchema {
   };
 }
 
+export interface SharedValueItem extends Struct.ComponentSchema {
+  collectionName: 'components_shared_value_items';
+  info: {
+    displayName: 'Value Item';
+  };
+  attributes: {
+    description: Schema.Attribute.Text;
+    icon: Schema.Attribute.String & Schema.Attribute.Required;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
@@ -293,8 +319,10 @@ declare module '@strapi/strapi' {
       'sections.values-section': SectionsValuesSection;
       'sections.why-choose-us-section': SectionsWhyChooseUsSection;
       'shared.benefits': SharedBenefits;
+      'shared.feature': SharedFeature;
       'shared.seo': SharedSeo;
       'shared.social-link': SharedSocialLink;
+      'shared.value-item': SharedValueItem;
     }
   }
 }

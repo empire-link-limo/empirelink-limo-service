@@ -30,12 +30,6 @@
     "author": {
       "type": "string"
     },
-    "categories": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::category.category",
-      "mappedBy": "blog_post"
-    },
     "image": {
       "allowedTypes": [
         "images",
@@ -54,6 +48,12 @@
       "type": "component",
       "repeatable": true,
       "component": "shared.seo"
+    },
+    "categories": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::category.category",
+      "mappedBy": "blog_posts"
     }
   }
 }

@@ -54,7 +54,8 @@ export default function AboutPage() {
   
   const valuesData = aboutPage?.ValuesSection || {
     title: "Our Values",
-    description: "The principles that guide every aspect of our service"
+    description: "The principles that guide every aspect of our service",
+    valueItems: []
   }
   
   const teamData = aboutPage?.TeamSection || {
@@ -65,8 +66,10 @@ export default function AboutPage() {
   const ctaData = aboutPage?.CTASection || {
     title: "Ready to Experience the Difference?",
     description: "Join our growing list of satisfied corporate clients and discover why Luxury Limo is the preferred choice for executive transportation.",
-    buttonText: "Book Now",
-    buttonUrl: "/booking",
+    primaryButtonText: "Book Now",
+    primaryButtonUrl: "/booking",
+    secondaryButtonText: "Contact Us",
+    secondaryButtonUrl: "/contact",
     backgroundImage: null
   }
   
@@ -83,47 +86,53 @@ export default function AboutPage() {
     getStrapiMedia(ctaData.backgroundImage) : 
     "/placeholder.svg?height=600&width=800"
   
-  // Default values array
+  // Default values array for when Strapi data is not available
   const defaultValues = [
     {
-      icon: <Clock className="h-10 w-10 text-gold" />,
+      id: 1,
+      icon: "Clock",
       title: "Punctuality",
       description:
         "We understand the value of your time. Our chauffeurs arrive early to ensure you're never kept waiting.",
     },
     {
-      icon: <Award className="h-10 w-10 text-gold" />,
+      id: 2,
+      icon: "Award",
       title: "Excellence",
       description:
         "We maintain the highest standards in every aspect of our service, from vehicle maintenance to chauffeur training.",
     },
     {
-      icon: <Shield className="h-10 w-10 text-gold" />,
+      id: 3,
+      icon: "Shield",
       title: "Safety",
       description:
         "Your safety is our priority. Our vehicles undergo rigorous safety inspections and our chauffeurs are professionally trained.",
     },
     {
-      icon: <Users className="h-10 w-10 text-gold" />,
+      id: 4,
+      icon: "Users",
       title: "Client Focus",
       description:
         "We tailor our services to meet your specific needs, ensuring a personalized experience for every client.",
     },
   ]
   
-  // Get values from TeamSection or use defaults
-  // Note: In Strapi 5, this would likely be directly available in the TeamSection component
-  // This is an assumption since we don't have the exact structure - adjust as needed
-  const values = aboutPage?.ValuesSection ? 
-    defaultValues.map((defaultValue, index) => {
-      // Using default icon but adjusting title and description if available
-      return {
-        icon: defaultValue.icon,
-        title: valuesData.title || defaultValue.title,
-        description: valuesData.description || defaultValue.description
-      }
-    }) 
+  // Use valueItems from Strapi if available, otherwise use defaults
+  const valueItems = valuesData.valueItems && valuesData.valueItems.length > 0 
+    ? valuesData.valueItems 
     : defaultValues
+  
+  // Function to render the correct icon component based on icon name string
+  const getIconComponent = (iconName: string | undefined) => {
+    switch (iconName) {
+      case "Clock": return <Clock className="h-10 w-10 text-gold" />
+      case "Award": return <Award className="h-10 w-10 text-gold" />
+      case "Shield": return <Shield className="h-10 w-10 text-gold" />
+      case "Users": return <Users className="h-10 w-10 text-gold" />
+      default: return <Award className="h-10 w-10 text-gold" />
+    }
+  }
 
   return (
     <div className="pt-20">
@@ -217,16 +226,18 @@ export default function AboutPage() {
           </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {values.map((value, index) => (
+            {valueItems.map((value, index) => (
               <motion.div
-                key={index}
+                key={value.id || index}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
                 className="bg-gray-900 p-8 rounded-lg border border-gray-800 text-center"
               >
-                <div className="flex justify-center mb-6">{value.icon}</div>
+                <div className="flex justify-center mb-6">
+                  {getIconComponent(value.icon)}
+                </div>
                 <h3 className="text-xl font-bold mb-4">{value.title}</h3>
                 <p className="text-gray-400">{value.description}</p>
               </motion.div>
@@ -236,7 +247,7 @@ export default function AboutPage() {
       </section>
 
       {/* Our Team */}
-      <section className="py-20 bg-gray-900">
+      {/* <section className="py-20 bg-gray-900">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -311,7 +322,7 @@ export default function AboutPage() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* CTA Section */}
       <section className="py-20 bg-black">
@@ -325,10 +336,14 @@ export default function AboutPage() {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Button asChild className="bg-gold hover:bg-gold-light text-black">
-                    <Link href={ctaData.buttonUrl || "/booking"}>{ctaData.buttonText || "Book Now"}</Link>
+                    <Link href={ctaData.primaryButtonUrl || "/booking"}>
+                      {ctaData.primaryButtonText || "Book Now"}
+                    </Link>
                   </Button>
                   <Button asChild variant="outline" className="border-white hover:bg-white/10">
-                    <Link href="/contact">Contact Us</Link>
+                    <Link href={ctaData.secondaryButtonUrl || "/contact"}>
+                      {ctaData.secondaryButtonText || "Contact Us"}
+                    </Link>
                   </Button>
                 </div>
               </div>
