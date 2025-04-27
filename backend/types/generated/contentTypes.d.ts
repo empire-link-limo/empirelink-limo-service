@@ -587,36 +587,6 @@ export interface ApiContactPageContactPage extends Struct.SingleTypeSchema {
   };
 }
 
-export interface ApiFeatureFeature extends Struct.CollectionTypeSchema {
-  collectionName: 'features';
-  info: {
-    displayName: 'Feature';
-    pluralName: 'features';
-    singularName: 'feature';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    icon: Schema.Attribute.String;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::feature.feature'
-    > &
-      Schema.Attribute.Private;
-    name: Schema.Attribute.String & Schema.Attribute.Required;
-    publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    vehicles: Schema.Attribute.Relation<'manyToMany', 'api::vehicle.vehicle'>;
-  };
-}
-
 export interface ApiFleetPageFleetPage extends Struct.SingleTypeSchema {
   collectionName: 'fleet_pages';
   info: {
@@ -739,6 +709,7 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    description: Schema.Attribute.Text;
     email: Schema.Attribute.String & Schema.Attribute.Required;
     footerText: Schema.Attribute.RichText;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
@@ -747,6 +718,7 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
       'api::global.global'
     > &
       Schema.Attribute.Private;
+    logo: Schema.Attribute.Media<'images'>;
     officeHours: Schema.Attribute.String;
     phone: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
@@ -754,6 +726,7 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    whatsappNumber: Schema.Attribute.String;
   };
 }
 
@@ -1525,7 +1498,6 @@ declare module '@strapi/strapi' {
       'api::booking-page.booking-page': ApiBookingPageBookingPage;
       'api::category.category': ApiCategoryCategory;
       'api::contact-page.contact-page': ApiContactPageContactPage;
-      'api::feature.feature': ApiFeatureFeature;
       'api::fleet-page.fleet-page': ApiFleetPageFleetPage;
       'api::gallery-image.gallery-image': ApiGalleryImageGalleryImage;
       'api::gallery-page.gallery-page': ApiGalleryPageGalleryPage;

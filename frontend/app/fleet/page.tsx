@@ -72,20 +72,34 @@ export default function FleetPage() {
         }} />
       )}
       
+      {/* Hero Section */}
+      <section className="relative">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src={heroImageUrl}
+            alt="Our Fleet"
+            fill
+            className="object-cover brightness-50"
+          />
+        </div>
+        <div className="container mx-auto px-4 py-20 md:py-32 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="max-w-3xl"
+          >
+            <h1 className="text-3xl md:text-5xl font-bold mb-6">{heroData.title}</h1>
+            <div className="h-1 w-20 bg-gold mb-6"></div>
+            <p className="text-xl text-gray-300 mb-8">
+              {heroData.description}
+            </p>
+          </motion.div>
+        </div>
+      </section>
+      
+      {/* Fleet Grid */}
       <div className="container mx-auto px-4 py-12">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-12"
-        >
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">{heroData.title}</h1>
-          <div className="h-1 w-20 bg-gold mx-auto mb-6"></div>
-          <p className="text-gray-300 max-w-2xl mx-auto">
-            {heroData.description}
-          </p>
-        </motion.div>
-
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {vehicles && vehicles.length > 0 ? vehicles.map((vehicle, index) => {
             const imageUrl = vehicle.image ? 
@@ -98,19 +112,26 @@ export default function FleetPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-gray-900 rounded-lg overflow-hidden border border-gray-800 vehicle-card"
+                className="bg-gray-900 rounded-lg overflow-hidden border border-gray-800 vehicle-card flex flex-col h-full"
               >
-                <div className="relative h-64">
-                  <Image src={imageUrl} alt={vehicle.name} fill className="object-cover" />
+                <div className="h-56 relative">
+                  <Image 
+                    src={imageUrl} 
+                    alt={vehicle.name} 
+                    fill 
+                    className="object-contain" // Changed from object-cover to object-contain
+                  />
                 </div>
-                <div className="p-6">
+                <div className="p-6 flex flex-col flex-grow">
                   <h3 className="text-xl font-bold mb-2">{vehicle.name}</h3>
                   <div className="flex items-center text-gold mb-4">
                     <Users className="h-5 w-5 mr-2" />
                     <span>{vehicle.capacity}</span>
                   </div>
                   <p className="text-gray-400 mb-6">{vehicle.description}</p>
-                  <div className="flex flex-col sm:flex-row gap-3">
+                  {/* This empty div will push the buttons to the bottom using flex-grow */}
+                  <div className="flex-grow"></div>
+                  <div className="flex flex-col sm:flex-row gap-3 mt-auto">
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button
@@ -132,12 +153,12 @@ export default function FleetPage() {
                           <DialogDescription className="text-gray-400">{selectedVehicle?.description}</DialogDescription>
                         </DialogHeader>
                         <div className="mt-4">
-                          <div className="relative h-80 mb-4">
+                          <div className="relative h-80 mb-4 bg-black/20 rounded-lg">
                             <Image
                               src={selectedImage || "/placeholder.svg"}
                               alt={selectedVehicle?.name || "Vehicle"}
                               fill
-                              className="object-cover rounded-lg"
+                              className="object-contain" // Changed from object-cover to object-contain
                             />
                           </div>
                           <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
@@ -146,14 +167,14 @@ export default function FleetPage() {
                               return (
                                 <div
                                   key={i}
-                                  className="relative h-20 w-32 flex-shrink-0 cursor-pointer border-2 rounded-md overflow-hidden"
+                                  className="relative h-20 w-32 flex-shrink-0 cursor-pointer border-2 rounded-md overflow-hidden bg-black/20"
                                   onClick={() => setSelectedImage(galleryImageUrl)}
                                 >
                                   <Image
                                     src={galleryImageUrl}
                                     alt={`Gallery image ${i + 1}`}
                                     fill
-                                    className="object-cover"
+                                    className="object-contain" // Changed from object-cover to object-contain
                                   />
                                 </div>
                               )
@@ -212,19 +233,25 @@ export default function FleetPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: placeholder * 0.1 }}
-              className="bg-gray-900 rounded-lg overflow-hidden border border-gray-800 vehicle-card"
+              className="bg-gray-900 rounded-lg overflow-hidden border border-gray-800 vehicle-card flex flex-col h-full"
             >
-              <div className="relative h-64">
-                <Image src="/placeholder.svg?height=600&width=800" alt="Vehicle placeholder" fill className="object-cover" />
+              <div className="h-56 relative">
+                <Image 
+                  src="/placeholder.svg?height=600&width=800" 
+                  alt="Vehicle placeholder" 
+                  fill 
+                  className="object-contain" 
+                />
               </div>
-              <div className="p-6">
+              <div className="p-6 flex flex-col flex-grow">
                 <h3 className="text-xl font-bold mb-2">Luxury Vehicle</h3>
                 <div className="flex items-center text-gold mb-4">
                   <Users className="h-5 w-5 mr-2" />
                   <span>Premium Capacity</span>
                 </div>
                 <p className="text-gray-400 mb-6">Loading vehicle details...</p>
-                <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex-grow"></div>
+                <div className="flex flex-col sm:flex-row gap-3 mt-auto">
                   <Button variant="outline" className="flex-1 border-gold text-gold hover:bg-gold/10" disabled>
                     View Details
                   </Button>

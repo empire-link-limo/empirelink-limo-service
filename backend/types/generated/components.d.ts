@@ -103,13 +103,12 @@ export interface SectionsGallerySettings extends Struct.ComponentSchema {
 export interface SectionsHeroSection extends Struct.ComponentSchema {
   collectionName: 'components_sections_hero_sections';
   info: {
-    description: '';
+    description: 'Hero section with support for separate mobile and desktop backgrounds';
     displayName: 'Home Hero Section';
   };
   attributes: {
-    backgroundImage: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios'
-    >;
+    backgroundImage: Schema.Attribute.Media<'images' | 'videos'>;
+    desktopBackgroundImage: Schema.Attribute.Media<'images' | 'videos'>;
     primaryButtonText: Schema.Attribute.String;
     primaryButtonUrl: Schema.Attribute.Text;
     secondaryButtonText: Schema.Attribute.String;
@@ -279,7 +278,7 @@ export interface SharedSocialLink extends Struct.ComponentSchema {
   };
   attributes: {
     platform: Schema.Attribute.Enumeration<
-      ['Facebook', 'Instagram', 'Twitter', 'LinkedIn']
+      ['Facebook', 'Instagram', 'X', 'LinkedIn']
     > &
       Schema.Attribute.Required;
     url: Schema.Attribute.Text & Schema.Attribute.Required;

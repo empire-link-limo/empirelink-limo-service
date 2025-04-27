@@ -7,6 +7,7 @@ export interface StrapiImage {
   width?: number;
   height?: number;
   alternativeText?: string;
+  mime?: string;
   formats?: {
     thumbnail?: {
       url: string;
@@ -50,6 +51,7 @@ export interface BaseHeroSection {
 // Home page specifics
 export interface HomeHeroSection extends BaseHeroSection {
   subtitle?: string;
+  desktopBackgroundImage?: StrapiImage;
   primaryButtonText?: string;
   primaryButtonUrl?: string;
   secondaryButtonText?: string;
@@ -344,10 +346,13 @@ export interface SocialLink {
 export interface GlobalData {
   id: number;
   companyName: string;
+  logo?: StrapiImage;
+  description?: string;
   phone: string;
   email: string;
   address?: string;
   officeHours?: string;
   footerText?: string;
+  whatsappNumber?: string;
   socialLinks?: SocialLink[];
 }

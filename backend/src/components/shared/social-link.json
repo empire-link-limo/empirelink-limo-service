@@ -10,7 +10,7 @@
       "enum": [
         "Facebook",
         "Instagram",
-        "Twitter",
+        "X",
         "LinkedIn"
       ],
       "required": true

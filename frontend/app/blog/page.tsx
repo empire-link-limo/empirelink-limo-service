@@ -15,9 +15,10 @@ import { BlogPageData, BlogPostData, BlogPostsResponse, CategoryData } from "@/l
 export default function BlogPage() {
   const [blogPage, setBlogPage] = useState<BlogPageData | null>(null)
   const [posts, setPosts] = useState<BlogPostData[]>([])
-  const [categories, setCategories] = useState<string[]>(["All"])
+  const [categories, setCategories] = useState<CategoryData[]>([])
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [searchQuery, setSearchQuery] = useState("")
+  const [currentPage, setCurrentPage] = useState(1)
   
   useEffect(() => {
     async function fetchData() {
@@ -28,9 +29,7 @@ export default function BlogPage() {
         
         setBlogPage(blogPageData)
         setPosts(postsData.data)
-        
-        const categoryOptions = categoriesData.map((category: CategoryData) => category.name)
-        setCategories(["All", ...categoryOptions])
+        setCategories(categoriesData)
       } catch (error) {
         console.error("Error fetching blog page data:", error)
       }
@@ -46,25 +45,55 @@ export default function BlogPage() {
     backgroundImage: null
   }
   
+  // Get blog settings with defaults
+  const blogSettings = blogPage?.BlogSettings || {
+    postsPerPage: 9,
+    showFeaturedPost: true,
+    enableSearchAndFilters: true
+  }
+  
+  // Get newsletter section
+  const newsletterData = blogPage?.NewsletterSection || {
+    title: "Subscribe to Our Newsletter",
+    description: "Stay updated with the latest insights, industry news, and exclusive offers from Luxury Limo.",
+    buttonText: "Subscribe",
+    image: null
+  }
+  
   // Get image URL
   const heroImageUrl = heroData?.backgroundImage ? 
     getStrapiMedia(heroData.backgroundImage) : 
     "/placeholder.svg?height=800&width=1600"
   
-  // Filter posts
+  const newsletterImageUrl = newsletterData?.image ?
+    getStrapiMedia(newsletterData.image) :
+    "/placeholder.svg?height=600&width=800"
+  
+  // Filter posts by category - fixed to check all categories
   const filteredPosts = posts.filter((post) => {
-    const categoryName = post.categories && post.categories.length > 0 ? post.categories[0]?.name : undefined
+    const matchesCategory = selectedCategory === "All" || 
+      (post.categories && post.categories.some(cat => cat.name === selectedCategory))
     
-    const matchesCategory = selectedCategory === "All" || categoryName === selectedCategory
     const matchesSearch =
       post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (post.excerpt?.toLowerCase() || "").includes(searchQuery.toLowerCase())
       
     return matchesCategory && matchesSearch
   })
+
+  // Get featured post - only if showFeaturedPost is true
+  const featuredPost = blogSettings.showFeaturedPost ? posts.find((post) => post.featured) : null
+
+  // Use all filtered posts (including featured post if it matches filters)
+  const regularPosts = filteredPosts
   
-  // Get featured post
-  const featuredPost = posts.find((post) => post.featured)
+  // Apply pagination
+  const postsPerPage = blogSettings.postsPerPage || 9
+  const totalPages = Math.ceil(regularPosts.length / postsPerPage)
+  const paginatedPosts = regularPosts.slice(
+    (currentPage - 1) * postsPerPage,
+    currentPage * postsPerPage
+  )
 
   return (
     <div className="pt-20">
@@ -101,38 +130,52 @@ export default function BlogPage() {
       {/* Blog Content */}
       <section className="py-20 bg-black">
         <div className="container mx-auto px-4">
-          {/* Search and Filter */}
-          <div className="mb-12">
-            <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
-              <div className="w-full md:w-1/3">
-                <Input
-                  placeholder="Search articles..."
-                  className="bg-gray-900 border-gray-800"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {categories.map((category) => (
+          {/* Search and Filter - only show if enableSearchAndFilters is true */}
+          {blogSettings.enableSearchAndFilters && (
+            <div className="mb-12">
+              <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
+                <div className="w-full md:w-1/3">
+                  <Input
+                    placeholder="Search articles..."
+                    className="bg-gray-900 border-gray-800"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+                <div className="flex flex-wrap gap-2">
                   <Button
-                    key={category}
-                    variant={selectedCategory === category ? "default" : "outline"}
+                    key="All"
+                    variant={selectedCategory === "All" ? "default" : "outline"}
                     className={
-                      selectedCategory === category
+                      selectedCategory === "All"
                         ? "bg-gold hover:bg-gold-light text-black"
                         : "border-gray-700 hover:bg-gray-800"
                     }
-                    onClick={() => setSelectedCategory(category)}
+                    onClick={() => setSelectedCategory("All")}
                   >
-                    {category}
+                    All
                   </Button>
-                ))}
+                  {categories.map((category) => (
+                    <Button
+                      key={category.id}
+                      variant={selectedCategory === category.name ? "default" : "outline"}
+                      className={
+                        selectedCategory === category.name
+                          ? "bg-gold hover:bg-gold-light text-black"
+                          : "border-gray-700 hover:bg-gray-800"
+                      }
+                      onClick={() => setSelectedCategory(category.name)}
+                    >
+                      {category.name}
+                    </Button>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Featured Post */}
-          {featuredPost && selectedCategory === "All" && searchQuery === "" && (
+          {featuredPost && blogSettings.showFeaturedPost && selectedCategory === "All" && searchQuery === "" && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -170,12 +213,12 @@ export default function BlogPage() {
                         <User className="h-4 w-4 mr-1" />
                         <span>{featuredPost.author || "Admin"}</span>
                       </div>
-                      <div className="flex items-center">
-                        <Tag className="h-4 w-4 mr-1" />
-                        <span>{featuredPost.categories && featuredPost.categories.length > 0 
-                          ? featuredPost.categories[0]?.name 
-                          : "Uncategorized"}</span>
-                      </div>
+                      {featuredPost.categories && featuredPost.categories.length > 0 && (
+                        <div className="flex items-center">
+                          <Tag className="h-4 w-4 mr-1" />
+                          <span>{featuredPost.categories[0]?.name || "Uncategorized"}</span>
+                        </div>
+                      )}
                     </div>
                     <Button asChild className="mt-auto bg-gold hover:bg-gold-light text-black self-start">
                       <Link href={`/blog/${featuredPost.slug}`}>
@@ -190,7 +233,7 @@ export default function BlogPage() {
 
           {/* Blog Posts Grid */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredPosts.length > 0 ? filteredPosts.map((post, index) => {
+            {paginatedPosts.length > 0 ? paginatedPosts.map((post, index) => {
               const imageUrl = post.image ? 
                 getStrapiMedia(post.image) : 
                 "/placeholder.svg?height=600&width=800"
@@ -216,12 +259,12 @@ export default function BlogPage() {
                           day: 'numeric'
                         })}</span>
                       </div>
-                      <div className="flex items-center">
-                        <Tag className="h-3 w-3 mr-1" />
-                        <span>{post.categories && post.categories.length > 0 
-                          ? post.categories[0]?.name 
-                          : "Uncategorized"}</span>
-                      </div>
+                      {post.categories && post.categories.length > 0 && (
+                        <div className="flex items-center">
+                          <Tag className="h-3 w-3 mr-1" />
+                          <span>{post.categories[0]?.name || "Uncategorized"}</span>
+                        </div>
+                      )}
                     </div>
                     <h3 className="text-xl font-bold mb-3">{post.title}</h3>
                     <p className="text-gray-300 mb-4 line-clamp-3">{post.excerpt}</p>
@@ -237,6 +280,46 @@ export default function BlogPage() {
               )
             }) : <></>}
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center mt-12">
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="border-gray-700"
+                >
+                  Previous
+                </Button>
+                
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(pageNum => (
+                  <Button
+                    key={pageNum}
+                    variant={pageNum === currentPage ? "default" : "outline"}
+                    className={
+                      pageNum === currentPage
+                        ? "bg-gold hover:bg-gold-light text-black"
+                        : "border-gray-700"
+                    }
+                    onClick={() => setCurrentPage(pageNum)}
+                  >
+                    {pageNum}
+                  </Button>
+                ))}
+                
+                <Button 
+                  variant="outline" 
+                  onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className="border-gray-700"
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
 
           {/* No Results */}
           {filteredPosts.length === 0 && (
@@ -263,18 +346,25 @@ export default function BlogPage() {
           <div className="bg-gray-900 rounded-lg border border-gray-800 p-8 md:p-12">
             <div className="grid md:grid-cols-2 gap-8 items-center">
               <div>
-                <h2 className="text-2xl md:text-3xl font-bold mb-4">Subscribe to Our Newsletter</h2>
+                <h2 className="text-2xl md:text-3xl font-bold mb-4">{newsletterData.title}</h2>
                 <p className="text-gray-300 mb-6">
-                  Stay updated with the latest insights, industry news, and exclusive offers from Luxury Limo.
+                  {newsletterData.description}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Input placeholder="Your email address" className="bg-gray-800 border-gray-700" />
-                  <Button className="bg-gold hover:bg-gold-light text-black">Subscribe</Button>
+                  <Button className="bg-gold hover:bg-gold-light text-black">
+                    {newsletterData.buttonText || "Subscribe"}
+                  </Button>
                 </div>
                 <p className="text-gray-400 text-sm mt-3">We respect your privacy. Unsubscribe at any time.</p>
               </div>
               <div className="relative h-64 rounded-lg overflow-hidden">
-                <Image src="/placeholder.svg?height=600&width=800" alt="Newsletter" fill className="object-cover" />
+                <Image 
+                  src={newsletterImageUrl} 
+                  alt="Newsletter" 
+                  fill 
+                  className="object-cover" 
+                />
               </div>
             </div>
           </div>

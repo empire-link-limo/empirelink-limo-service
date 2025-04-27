@@ -45,6 +45,14 @@ export default function GalleryPage() {
     backgroundImage: null
   }
   
+  // Get gallery settings
+  const gallerySettings = galleryPage?.GallerySettings || {
+    showCategories: true,
+    enableLightbox: true,
+    imagesPerRow: 3,
+    maxImages: undefined
+  }
+  
   // Get image URL
   const heroImageUrl = heroData?.backgroundImage ? 
     getStrapiMedia(heroData.backgroundImage) : 
@@ -56,11 +64,33 @@ export default function GalleryPage() {
     (image.categories && image.categories.some(cat => cat.name === selectedCategory))
   )
   
+  // Apply maxImages limit if set
+  const imagesToDisplay = gallerySettings.maxImages 
+    ? filteredImages.slice(0, gallerySettings.maxImages) 
+    : filteredImages
+  
+  // Determine grid columns based on imagesPerRow setting
+  const getGridCols = () => {
+    switch(gallerySettings.imagesPerRow) {
+      case 1:
+        return "grid-cols-1";
+      case 2:
+        return "grid-cols-1 sm:grid-cols-2";
+      case 4:
+        return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4";
+      case 3:
+      default:
+        return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
+    }
+  }
+  
   // Open lightbox with specific image
   const openLightbox = (index: number) => {
-    setCurrentImageIndex(index)
-    setLightboxOpen(true)
-    document.body.style.overflow = "hidden" // Prevent scrolling when lightbox is open
+    if (gallerySettings.enableLightbox) {
+      setCurrentImageIndex(index)
+      setLightboxOpen(true)
+      document.body.style.overflow = "hidden" // Prevent scrolling when lightbox is open
+    }
   }
 
   // Close lightbox
@@ -71,12 +101,12 @@ export default function GalleryPage() {
 
   // Navigate to next image in lightbox
   const nextImage = () => {
-    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % filteredImages.length)
+    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imagesToDisplay.length)
   }
 
   // Navigate to previous image in lightbox
   const prevImage = () => {
-    setCurrentImageIndex((prevIndex) => (prevIndex - 1 + filteredImages.length) % filteredImages.length)
+    setCurrentImageIndex((prevIndex) => (prevIndex - 1 + imagesToDisplay.length) % imagesToDisplay.length)
   }
 
   // Handle keyboard navigation in lightbox
@@ -126,34 +156,36 @@ export default function GalleryPage() {
       {/* Gallery Section */}
       <section className="py-20 bg-black">
         <div className="container mx-auto px-4">
-          {/* Category Filter */}
-          <div className="mb-12">
-            <div className="flex flex-wrap gap-3 justify-center">
-              {categories.map((category) => (
-                <Button
-                  key={category}
-                  variant={selectedCategory === category ? "default" : "outline"}
-                  className={
-                    selectedCategory === category
-                      ? "bg-gold hover:bg-gold-light text-black"
-                      : "border-gray-700 hover:bg-gray-800"
-                  }
-                  onClick={() => setSelectedCategory(category)}
-                >
-                  {category}
-                </Button>
-              ))}
+          {/* Category Filter - only show if showCategories is true */}
+          {gallerySettings.showCategories && (
+            <div className="mb-12">
+              <div className="flex flex-wrap gap-3 justify-center">
+                {categories.map((category) => (
+                  <Button
+                    key={category}
+                    variant={selectedCategory === category ? "default" : "outline"}
+                    className={
+                      selectedCategory === category
+                        ? "bg-gold hover:bg-gold-light text-black"
+                        : "border-gray-700 hover:bg-gray-800"
+                    }
+                    onClick={() => setSelectedCategory(category)}
+                  >
+                    {category}
+                  </Button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Gallery Grid */}
+          {/* Gallery Grid - use dynamic grid columns based on imagesPerRow */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+            className={`grid ${getGridCols()} gap-6`}
           >
-            {filteredImages.length > 0 ? filteredImages.map((image, index) => {
+            {imagesToDisplay.length > 0 ? imagesToDisplay.map((image, index) => {
               const imageUrl = image.image ? 
                 getStrapiMedia(image.image) : 
                 "/placeholder.svg?height=800&width=1200"
@@ -169,7 +201,7 @@ export default function GalleryPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.05 }}
-                  className="relative group cursor-pointer overflow-hidden rounded-lg border border-gray-800"
+                  className={`relative group overflow-hidden rounded-lg border border-gray-800 ${gallerySettings.enableLightbox ? 'cursor-pointer' : ''}`}
                   onClick={() => openLightbox(index)}
                 >
                   <div className="relative aspect-[4/3] overflow-hidden">
@@ -207,7 +239,7 @@ export default function GalleryPage() {
           </motion.div>
 
           {/* No Results */}
-          {filteredImages.length === 0 && categories.length > 1 && (
+          {imagesToDisplay.length === 0 && categories.length > 1 && (
             <div className="text-center py-12">
               <h3 className="text-xl font-bold mb-2">No images found</h3>
               <p className="text-gray-400 mb-6">No images available in this category.</p>
@@ -219,9 +251,9 @@ export default function GalleryPage() {
         </div>
       </section>
 
-      {/* Lightbox */}
+      {/* Lightbox - only enable if enableLightbox is true */}
       <AnimatePresence>
-        {lightboxOpen && filteredImages.length > 0 && (
+        {lightboxOpen && gallerySettings.enableLightbox && imagesToDisplay.length > 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -239,55 +271,61 @@ export default function GalleryPage() {
               </button>
 
               {/* Navigation buttons */}
-              <button
-                className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 p-2 text-white bg-black/50 rounded-full ml-4 hover:bg-gold/80 transition-colors"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  prevImage()
-                }}
-              >
-                <ChevronLeft className="h-8 w-8" />
-              </button>
+              {imagesToDisplay.length > 1 && (
+                <>
+                  <button
+                    className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 p-2 text-white bg-black/50 rounded-full ml-4 hover:bg-gold/80 transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      prevImage()
+                    }}
+                  >
+                    <ChevronLeft className="h-8 w-8" />
+                  </button>
 
-              <button
-                className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 p-2 text-white bg-black/50 rounded-full mr-4 hover:bg-gold/80 transition-colors"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  nextImage()
-                }}
-              >
-                <ChevronRight className="h-8 w-8" />
-              </button>
+                  <button
+                    className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 p-2 text-white bg-black/50 rounded-full mr-4 hover:bg-gold/80 transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      nextImage()
+                    }}
+                  >
+                    <ChevronRight className="h-8 w-8" />
+                  </button>
+                </>
+              )}
 
               {/* Image container */}
-              <div className="relative flex-1 overflow-hidden rounded-lg">
-                <div className="relative h-full w-full">
+              <div className="relative flex-1 overflow-hidden rounded-lg bg-black/50">
+                <div className="w-full h-full flex items-center justify-center" style={{ minHeight: "400px" }}>
                   <Image
-                    src={filteredImages[currentImageIndex].image ? 
-                      getStrapiMedia(filteredImages[currentImageIndex].image) : 
+                    src={imagesToDisplay[currentImageIndex].image ? 
+                      getStrapiMedia(imagesToDisplay[currentImageIndex].image) : 
                       "/placeholder.svg?height=800&width=1200"}
-                    alt={filteredImages[currentImageIndex].title}
-                    fill
-                    className="object-contain"
+                    alt={imagesToDisplay[currentImageIndex].title}
+                    width={1200}
+                    height={800}
+                    className="object-contain max-h-[70vh] w-auto h-auto"
+                    priority
                   />
                 </div>
               </div>
 
               {/* Caption */}
               <div className="bg-black/80 p-4 rounded-b-lg">
-                <div className="flex items-center justify-between">
-                  <div>
+                <div className="flex items-center justify-between flex-wrap">
+                  <div className="flex-1 min-w-0 pr-4">
                     <span className="bg-gold/20 text-gold px-2 py-1 rounded text-xs">
-                      {filteredImages[currentImageIndex].categories && 
-                       filteredImages[currentImageIndex].categories.length > 0 
-                        ? filteredImages[currentImageIndex].categories[0].name 
+                      {imagesToDisplay[currentImageIndex].categories && 
+                        imagesToDisplay[currentImageIndex].categories.length > 0 
+                        ? imagesToDisplay[currentImageIndex].categories[0].name 
                         : "Vehicle"}
                     </span>
-                    <h3 className="text-white font-bold mt-2">{filteredImages[currentImageIndex].title}</h3>
-                    <p className="text-gray-300 mt-1">{filteredImages[currentImageIndex].description}</p>
+                    <h3 className="text-white font-bold mt-2 truncate">{imagesToDisplay[currentImageIndex].title}</h3>
+                    <p className="text-gray-300 mt-1 line-clamp-2">{imagesToDisplay[currentImageIndex].description}</p>
                   </div>
-                  <div className="text-gray-400 text-sm">
-                    {currentImageIndex + 1} / {filteredImages.length}
+                  <div className="bg-black/60 text-white px-3 py-1 rounded-full text-sm font-medium">
+                    {currentImageIndex + 1} / {imagesToDisplay.length}
                   </div>
                 </div>
               </div>

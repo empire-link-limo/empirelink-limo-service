@@ -130,9 +130,13 @@ export default function ServicesPage() {
                 <div key={service.id} id={service.slug} className="scroll-mt-24">
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
+                    // Use animate for the first item, whileInView for others
+                    {...(index === 0 
+                      ? { animate: { opacity: 1, y: 0 } } 
+                      : { whileInView: { opacity: 1, y: 0 } }
+                    )}
                     transition={{ duration: 0.5 }}
-                    viewport={{ once: true }}
+                    viewport={{ once: true, margin: "-100px" }}
                     className={`grid md:grid-cols-2 gap-12 items-center ${index % 2 === 1 ? "md:grid-flow-dense" : ""}`}
                   >
                     <div className={index % 2 === 1 ? "md:col-start-2" : ""}>
@@ -155,9 +159,14 @@ export default function ServicesPage() {
                           </div>
                         ))}
                       </div>
-                      <Button asChild className="bg-gold hover:bg-gold-light text-black">
-                        <Link href="/booking">Book This Service</Link>
-                      </Button>
+                      <div className="flex flex-col sm:flex-row gap-4">
+                        <Button asChild className="bg-gold hover:bg-gold-light text-black">
+                          <Link href="/booking">Book This Service</Link>
+                        </Button>
+                        <Button asChild variant="outline" className="border-gold text-gold hover:bg-gold/10">
+                          <Link href={`/services/${service.slug}`}>View Details</Link>
+                        </Button>
+                      </div>
                     </div>
                     <div className={index % 2 === 1 ? "md:col-start-1" : ""}>
                       <div className="relative h-[400px] rounded-lg overflow-hidden">
@@ -188,6 +197,7 @@ export default function ServicesPage() {
                   "Meet and greet service",
                 ],
                 image: "/placeholder.svg?height=600&width=800",
+                slug: "corporate-transportation"
               },
               {
                 id: "airport",
@@ -204,6 +214,7 @@ export default function ServicesPage() {
                   "Curbside pickup",
                 ],
                 image: "/placeholder.svg?height=600&width=800",
+                slug: "airport-transfers"
               },
               {
                 id: "events",
@@ -220,14 +231,19 @@ export default function ServicesPage() {
                   "VIP service options",
                 ],
                 image: "/placeholder.svg?height=600&width=800",
+                slug: "corporate-events"
               },
             ].map((service, index) => (
               <div key={service.id} id={service.id} className="scroll-mt-24">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  // Use animate for the first item, whileInView for others
+                  {...(index === 0 
+                    ? { animate: { opacity: 1, y: 0 } } 
+                    : { whileInView: { opacity: 1, y: 0 } }
+                  )}
                   transition={{ duration: 0.5 }}
-                  viewport={{ once: true }}
+                  viewport={{ once: true, margin: "-100px" }}
                   className={`grid md:grid-cols-2 gap-12 items-center ${index % 2 === 1 ? "md:grid-flow-dense" : ""}`}
                 >
                   <div className={index % 2 === 1 ? "md:col-start-2" : ""}>
@@ -245,9 +261,14 @@ export default function ServicesPage() {
                         </div>
                       ))}
                     </div>
-                    <Button asChild className="bg-gold hover:bg-gold-light text-black">
-                      <Link href="/booking">Book This Service</Link>
-                    </Button>
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      <Button asChild className="bg-gold hover:bg-gold-light text-black">
+                        <Link href="/booking">Book This Service</Link>
+                      </Button>
+                      <Button asChild variant="outline" className="border-gold text-gold hover:bg-gold/10">
+                        <Link href={`/services/${service.slug}`}>View Details</Link>
+                      </Button>
+                    </div>
                   </div>
                   <div className={index % 2 === 1 ? "md:col-start-1" : ""}>
                     <div className="relative h-[400px] rounded-lg overflow-hidden">
@@ -273,7 +294,7 @@ export default function ServicesPage() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "-100px" }}
             className="text-center mb-16"
           >
             <h2 className="text-3xl font-bold mb-4">{whyChooseUs.title}</h2>
@@ -286,7 +307,7 @@ export default function ServicesPage() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, margin: "-100px" }}
               className="bg-gray-900 p-8 rounded-lg border border-gray-800 text-center"
             >
               <div className="flex justify-center mb-6">
@@ -303,7 +324,7 @@ export default function ServicesPage() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, margin: "-100px" }}
               className="bg-gray-900 p-8 rounded-lg border border-gray-800 text-center"
             >
               <div className="flex justify-center mb-6">
@@ -320,7 +341,7 @@ export default function ServicesPage() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, margin: "-100px" }}
               className="bg-gray-900 p-8 rounded-lg border border-gray-800 text-center"
             >
               <div className="flex justify-center mb-6">

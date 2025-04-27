@@ -23,7 +23,7 @@ import {
 // Global data
 export async function getGlobalData(): Promise<GlobalData> {
   const globalRes = await fetchAPI("/global", {
-    populate: ["socialLinks"],
+    populate: ["socialLinks", "logo"],
   });
   return globalRes.data;
 }
@@ -33,7 +33,14 @@ export async function getHomepage(): Promise<HomepageData> {
   const homepageRes = await fetchAPI("/homepage", {
     populate: {
       HeroSection: {
-        populate: ["backgroundImage"],
+        populate: {
+          backgroundImage: {
+            fields: ["url", "width", "height", "alternativeText", "mime"]
+          },
+          desktopBackgroundImage: {
+            fields: ["url", "width", "height", "alternativeText", "mime"]
+          }
+        }
       },
       FleetSection: true,
       ServicesSection: true,

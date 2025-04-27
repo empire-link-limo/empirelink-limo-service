@@ -3,11 +3,13 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { Menu, X, Phone } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
 import { GlobalData } from "@/lib/types"
+import { getStrapiMedia } from "@/lib/api"
 
 export function Header({ global }: { global?: GlobalData }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -33,6 +35,9 @@ export function Header({ global }: { global?: GlobalData }) {
     { href: "/contact", label: "Contact" },
   ]
 
+  // Get the logo URL if it exists
+  const logoUrl = global?.logo ? getStrapiMedia(global.logo) : null
+
   return (
     <header
       className={cn(
@@ -41,16 +46,30 @@ export function Header({ global }: { global?: GlobalData }) {
       )}
     >
       <div className="container mx-auto px-4 flex justify-between items-center">
-        <Link href="/" className="flex items-center">
-          <h1 className="text-2xl font-playfair font-bold">
-            <span className="gold-gradient">{global?.companyName || "Empire Link"}</span> Limo
-          </h1>
+        {/* Logo with fixed width */}
+        <Link href="/" className="flex items-center flex-shrink-0">
+          {logoUrl ? (
+            <div className="h-16 flex items-center w-48 flex-shrink-0">
+              <Image 
+                src={logoUrl} 
+                alt={global?.companyName || "Company Logo"} 
+                width={200}
+                height={80}
+                priority
+                className="max-h-16 w-auto object-contain"
+              />
+            </div>
+          ) : (
+            <h1 className="text-2xl font-playfair font-bold flex-shrink-0">
+              <span className="gold-gradient">{global?.companyName || "Empire Link"}</span> Limo
+            </h1>
+          )}
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
+        {/* Desktop Navigation with responsive spacing */}
+        <nav className="hidden md:flex items-center lg:space-x-8 md:space-x-4">
           {navLinks.map((link) => (
-            <Link key={link.href} href={link.href} className="text-gray-300 hover:text-gold transition-colors">
+            <Link key={link.href} href={link.href} className="text-gray-300 hover:text-gold transition-colors whitespace-nowrap">
               {link.label}
             </Link>
           ))}
@@ -58,7 +77,7 @@ export function Header({ global }: { global?: GlobalData }) {
             <Link href="/booking">Book Now</Link>
           </Button>
           <Button asChild className="bg-gold hover:bg-gold-light text-black">
-            <a href={`tel:${global?.phone || "+1234567890"}`} className="flex items-center gap-2">
+            <a href={`tel:${global?.phone}`} className="flex items-center gap-2">
               <Phone size={16} />
               <span className="hidden lg:inline">Call Us</span>
             </a>
@@ -99,7 +118,7 @@ export function Header({ global }: { global?: GlobalData }) {
                   </Link>
                 </Button>
                 <Button asChild className="bg-gold hover:bg-gold-light text-black w-full">
-                  <a href={`tel:${global?.phone || "+1234567890"}`} className="flex items-center justify-center gap-2">
+                  <a href={`tel:${global?.phone}`} className="flex items-center justify-center gap-2">
                     <Phone size={16} />
                     <span>Call Us</span>
                   </a>

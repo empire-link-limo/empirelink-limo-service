@@ -1,15 +1,45 @@
-// components/footer.tsx
+"use client"
+
+import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Facebook, Instagram, Twitter, Linkedin, Mail, Phone, MapPin } from "lucide-react"
+import Image from "next/image"
+import { Phone, Mail, MapPin } from "lucide-react"
+import { FaFacebookF, FaInstagram, FaLinkedinIn, FaXTwitter } from "react-icons/fa6"
 import { Button } from "@/components/ui/button"
-import { GlobalData, SocialLink } from "@/lib/types"
+import { GlobalData, SocialLink, ServiceData } from "@/lib/types"
+import { getStrapiMedia } from "@/lib/api"
+import { getAllServices } from "@/lib/strapi"
 
 export function Footer({ global }: { global?: GlobalData }) {
+  const [services, setServices] = useState<ServiceData[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchServices() {
+      try {
+        const servicesData = await getAllServices()
+        // Sort services by ID in ascending order for consistency
+        const sortedServices = [...servicesData].sort((a, b) => a.id - b.id)
+        setServices(sortedServices)
+      } catch (error) {
+        console.error("Error fetching services:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchServices()
+  }, [])
+
   const currentYear = new Date().getFullYear();
   const companyName = global?.companyName || "Luxury Limo Service";
+  const description = global?.description || "Premium limousine and chauffeur services for discerning corporate clients.";
   const phone = global?.phone || "+1 (234) 567-8900";
   const email = global?.email || "info@luxurylimo.com";
   const address = global?.address || "123 Luxury Drive, Suite 400\nNew York, NY 10001";
+  const logo = global?.logo ? getStrapiMedia(global.logo) : null;
+  
+  // Use global footerText if available, otherwise create default
   const footerText = global?.footerText || `© ${currentYear} ${companyName}. All rights reserved.`;
   
   return (
@@ -17,22 +47,33 @@ export function Footer({ global }: { global?: GlobalData }) {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
+            {logo && (
+              <div className="mb-4">
+                <Image 
+                  src={logo} 
+                  alt={companyName} 
+                  width={200}
+                  height={80}
+                  className="max-h-16 w-auto object-contain"
+                />
+              </div>
+            )}
             <h3 className="text-xl font-playfair font-bold mb-4">
-              <span className="gold-gradient">{global?.companyName || "Empire Link"}</span> Limo
+              <span className="gold-gradient">{companyName}</span>
             </h3>
             <p className="text-gray-400 mb-4">
-              Premium limousine and chauffeur services for discerning corporate clients.
+              {description}
             </p>
             <div className="flex space-x-4">
               {global?.socialLinks && global.socialLinks.length > 0 ? (
                 global.socialLinks.map((social, idx) => {
-                  let Icon;
+                  let SocialIcon;
                   switch (social.platform.toLowerCase()) {
-                    case 'facebook': Icon = Facebook; break;
-                    case 'instagram': Icon = Instagram; break;
-                    case 'twitter': Icon = Twitter; break;
-                    case 'linkedin': Icon = Linkedin; break;
-                    default: Icon = Facebook;
+                    case 'facebook': SocialIcon = FaFacebookF; break;
+                    case 'instagram': SocialIcon = FaInstagram; break;
+                    case 'x': SocialIcon = FaXTwitter; break;
+                    case 'linkedin': SocialIcon = FaLinkedinIn; break;
+                    default: SocialIcon = FaFacebookF;
                   }
                   
                   return (
@@ -43,7 +84,7 @@ export function Footer({ global }: { global?: GlobalData }) {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <Icon size={20} />
+                      <SocialIcon size={20} />
                       <span className="sr-only">{social.platform}</span>
                     </a>
                   );
@@ -51,19 +92,19 @@ export function Footer({ global }: { global?: GlobalData }) {
               ) : (
                 <>
                   <a href="#" className="text-gray-400 hover:text-gold transition-colors">
-                    <Facebook size={20} />
+                    <FaFacebookF size={20} />
                     <span className="sr-only">Facebook</span>
                   </a>
                   <a href="#" className="text-gray-400 hover:text-gold transition-colors">
-                    <Instagram size={20} />
+                    <FaInstagram size={20} />
                     <span className="sr-only">Instagram</span>
                   </a>
                   <a href="#" className="text-gray-400 hover:text-gold transition-colors">
-                    <Twitter size={20} />
-                    <span className="sr-only">Twitter</span>
+                    <FaXTwitter size={20} />
+                    <span className="sr-only">X</span>
                   </a>
                   <a href="#" className="text-gray-400 hover:text-gold transition-colors">
-                    <Linkedin size={20} />
+                    <FaLinkedinIn size={20} />
                     <span className="sr-only">LinkedIn</span>
                   </a>
                 </>
@@ -115,31 +156,53 @@ export function Footer({ global }: { global?: GlobalData }) {
           <div>
             <h4 className="text-lg font-playfair font-bold mb-4">Services</h4>
             <ul className="space-y-2">
-              <li>
-                <Link href="/services#corporate" className="text-gray-400 hover:text-gold transition-colors">
-                  Corporate Transportation
-                  </Link>
-              </li>
-              <li>
-                <Link href="/services#airport" className="text-gray-400 hover:text-gold transition-colors">
-                  Airport Transfers
-                </Link>
-              </li>
-              <li>
-                <Link href="/services#events" className="text-gray-400 hover:text-gold transition-colors">
-                  Corporate Events
-                </Link>
-              </li>
-              <li>
-                <Link href="/services#roadshows" className="text-gray-400 hover:text-gold transition-colors">
-                  Roadshows
-                </Link>
-              </li>
-              <li>
-                <Link href="/services#hourly" className="text-gray-400 hover:text-gold transition-colors">
-                  Hourly Charters
-                </Link>
-              </li>
+              {isLoading ? (
+                // Loading state - show placeholders
+                Array(5).fill(0).map((_, idx) => (
+                  <li key={idx} className="animate-pulse h-5 bg-gray-800 rounded w-3/4"></li>
+                ))
+              ) : services && services.length > 0 ? (
+                // Actual services
+                services.map((service) => (
+                  <li key={service.id}>
+                    <Link 
+                      href={`/services/${service.slug}`} 
+                      className="text-gray-400 hover:text-gold transition-colors"
+                    >
+                      {service.title}
+                    </Link>
+                  </li>
+                ))
+              ) : (
+                // Fallback if no services found
+                <>
+                  <li>
+                    <Link href="/services#corporate" className="text-gray-400 hover:text-gold transition-colors">
+                      Corporate Transportation
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/services#airport" className="text-gray-400 hover:text-gold transition-colors">
+                      Airport Transfers
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/services#events" className="text-gray-400 hover:text-gold transition-colors">
+                      Corporate Events
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/services#roadshows" className="text-gray-400 hover:text-gold transition-colors">
+                      Roadshows
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/services#hourly" className="text-gray-400 hover:text-gold transition-colors">
+                      Hourly Charters
+                    </Link>
+                  </li>
+                </>
+              )}
             </ul>
           </div>
 
@@ -168,12 +231,11 @@ export function Footer({ global }: { global?: GlobalData }) {
         <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-500 text-sm">
           <p dangerouslySetInnerHTML={{ __html: footerText }} />
           <div className="mt-2 space-x-4">
-            <Link href="/privacy" className="hover:text-gold transition-colors">
-              Privacy Policy
-            </Link>
-            <Link href="/terms" className="hover:text-gold transition-colors">
-              Terms of Service
-            </Link>
+            <span>Created with ❤️ by{" "}
+              <Link href="https://bilal1203.github.io/" className="hover:text-gold transition-colors">
+                Ahmad Bilal
+              </Link>
+            </span>
           </div>
         </div>
       </div>

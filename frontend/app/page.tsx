@@ -104,13 +104,78 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
-        <Image
-          src={heroImageUrl || "/placeholder.svg?height=1080&width=1920"}
-          alt="Luxury limousine"
-          fill
-          className="object-cover brightness-50"
-          priority
-        />
+          {heroData.backgroundImage?.url && (
+            <>
+              {heroData.backgroundImage.mime?.startsWith('video/') ? (
+                <>
+                  {/* Mobile Video (hidden on desktop) */}
+                  <video
+                    src={getStrapiMedia(heroData.backgroundImage)}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    className="object-cover w-full h-full md:hidden"
+                  />
+                  
+                  {/* Desktop Video (hidden on mobile) */}
+                  {heroData.desktopBackgroundImage?.url && heroData.desktopBackgroundImage.mime?.startsWith('video/') ? (
+                    <video
+                      src={getStrapiMedia(heroData.desktopBackgroundImage)}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      className="hidden md:block object-cover w-full h-full"
+                    />
+                  ) : (
+                    // If no desktop video, use the mobile video but with different object-fit settings
+                    <video
+                      src={getStrapiMedia(heroData.backgroundImage)}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      className="hidden md:block object-cover w-full h-full"
+                    />
+                  )}
+                </>
+              ) : (
+                <>
+                  {/* Mobile Image (hidden on desktop) */}
+                  <Image
+                    src={getStrapiMedia(heroData.backgroundImage) || "/placeholder.svg?height=1080&width=1920"}
+                    alt="Luxury limousine"
+                    fill
+                    className="object-cover md:hidden"
+                    priority
+                  />
+                  
+                  {/* Desktop Image (hidden on mobile) */}
+                  {heroData.desktopBackgroundImage?.url ? (
+                    <Image
+                      src={getStrapiMedia(heroData.desktopBackgroundImage) || "/placeholder.svg?height=1080&width=1920"}
+                      alt="Luxury limousine"
+                      fill
+                      className="hidden md:block object-cover"
+                      priority
+                    />
+                  ) : (
+                    // If no desktop image, use the mobile image
+                    <Image
+                      src={getStrapiMedia(heroData.backgroundImage) || "/placeholder.svg?height=1080&width=1920"}
+                      alt="Luxury limousine"
+                      fill
+                      className="hidden md:block object-cover"
+                      priority
+                    />
+                  )}
+                </>
+              )}
+              {/* Dark gradient overlay for better text visibility */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/60 to-black/80"></div>
+            </>
+          )}
         </div>
         <div className="container mx-auto px-4 z-10 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
@@ -151,9 +216,10 @@ export default function Home() {
           </div>
 
           <div className="relative">
+            {/* Moved the buttons outside with negative positioning */}
             <button
               onClick={() => scroll("left")}
-              className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-black/50 hover:bg-black/80 p-2 rounded-full text-white"
+              className="absolute left-[-40px] top-1/2 transform -translate-y-1/2 z-10 bg-black/50 hover:bg-black/80 p-2 rounded-full text-white"
               aria-label="Scroll left"
             >
               <ChevronLeft className="h-6 w-6" />
@@ -172,20 +238,21 @@ export default function Home() {
                     whileHover={{ scale: 1.03 }}
                     transition={{ type: "spring", stiffness: 300 }}
                   >
-                    <div className="bg-gray-900 rounded-lg overflow-hidden shadow-lg border border-gray-800">
-                      <div className="relative h-48">
-                      <Image
-                        src={imageUrl || "/placeholder.svg?height=600&width=800"}
-                        alt={vehicle.name}
-                        fill
-                        className="object-cover"
-                      />
+                    <div className="bg-gray-900 rounded-lg overflow-hidden shadow-lg border border-gray-800 flex flex-col h-full">
+                      <div className="relative h-48 bg-black/20">
+                        <Image
+                          src={imageUrl || "/placeholder.svg?height=600&width=800"}
+                          alt={vehicle.name}
+                          fill
+                          className="object-contain"
+                        />
                       </div>
-                      <div className="p-6">
+                      <div className="p-6 flex flex-col flex-grow">
                         <h3 className="text-xl font-bold mb-2">{vehicle.name}</h3>
                         <p className="text-gold mb-2">{vehicle.capacity}</p>
                         <p className="text-gray-400 mb-4">{vehicle.description}</p>
-                        <Button asChild variant="outline" className="w-full border-gold text-gold hover:bg-gold/10">
+                        <div className="flex-grow"></div>
+                        <Button asChild variant="outline" className="w-full border-gold text-gold hover:bg-gold/10 mt-auto">
                           <Link href={`/fleet/${vehicle.slug}`}>View Details</Link>
                         </Button>
                       </div>
@@ -199,20 +266,21 @@ export default function Home() {
                   whileHover={{ scale: 1.03 }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
-                  <div className="bg-gray-900 rounded-lg overflow-hidden shadow-lg border border-gray-800">
-                    <div className="relative h-48">
+                  <div className="bg-gray-900 rounded-lg overflow-hidden shadow-lg border border-gray-800 flex flex-col h-full">
+                    <div className="relative h-48 bg-black/20">
                       <Image
                         src="/placeholder.svg?height=600&width=800"
                         alt="Vehicle placeholder"
                         fill
-                        className="object-cover"
+                        className="object-contain"
                       />
                     </div>
-                    <div className="p-6">
+                    <div className="p-6 flex flex-col flex-grow">
                       <h3 className="text-xl font-bold mb-2">Luxury Vehicle</h3>
                       <p className="text-gold mb-2">3-6 passengers</p>
                       <p className="text-gray-400 mb-4">Premium transportation experience</p>
-                      <Button asChild variant="outline" className="w-full border-gold text-gold hover:bg-gold/10">
+                      <div className="flex-grow"></div>
+                      <Button asChild variant="outline" className="w-full border-gold text-gold hover:bg-gold/10 mt-auto">
                         <Link href="/fleet">View Details</Link>
                       </Button>
                     </div>
@@ -223,7 +291,7 @@ export default function Home() {
 
             <button
               onClick={() => scroll("right")}
-              className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-black/50 hover:bg-black/80 p-2 rounded-full text-white"
+              className="absolute right-[-40px] top-1/2 transform -translate-y-1/2 z-10 bg-black/50 hover:bg-black/80 p-2 rounded-full text-white"
               aria-label="Scroll right"
             >
               <ChevronRight className="h-6 w-6" />

@@ -394,40 +394,65 @@ export default function ContactPage() {
      </section>
 
      {/* Map Section */}
-     <section className="py-20 bg-gradient-to-b from-black to-gray-900">
-       <div className="container mx-auto px-4">
-         <motion.div
-           initial={{ opacity: 0, y: 20 }}
-           whileInView={{ opacity: 1, y: 0 }}
-           transition={{ duration: 0.5 }}
-           viewport={{ once: true }}
-           className="text-center mb-12"
-         >
-           <h2 className="text-2xl md:text-3xl font-bold mb-4">{mapSection.title}</h2>
-           <div className="h-1 w-20 bg-gold mx-auto mb-6"></div>
-           <p className="text-gray-300 max-w-2xl mx-auto">
-             {mapSection.description}
-           </p>
-         </motion.div>
+      <section className="py-20 bg-gradient-to-b from-black to-gray-900">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">{mapSection.title}</h2>
+            <div className="h-1 w-20 bg-gold mx-auto mb-6"></div>
+            {mapSection.description && (
+              <p className="text-gray-300 max-w-2xl mx-auto">
+                {mapSection.description}
+              </p>
+            )}
+          </motion.div>
 
-         <div className="relative h-[400px] rounded-lg overflow-hidden">
-           <Image src="/placeholder.svg?height=800&width=1600" alt="Map location" fill className="object-cover" />
-           <div className="absolute inset-0 flex items-center justify-center">
-             <div className="bg-black/80 p-6 rounded-lg max-w-md">
-               <h3 className="text-xl font-bold mb-2">Luxury Limo Headquarters</h3>
-               <p className="text-gray-300 mb-4 whitespace-pre-line">
-                 {contactDetails.address}
-               </p>
-               <Button asChild className="bg-gold hover:bg-gold-light text-black">
-                 <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer">
-                   Get Directions
-                 </a>
-               </Button>
-             </div>
-           </div>
-         </div>
-       </div>
-     </section>
+          <div className="relative h-[400px] rounded-lg overflow-hidden border border-gray-800 shadow-xl map-container">
+            {mapSection.mapEmbedCode ? (
+              <div 
+                dangerouslySetInnerHTML={{ __html: mapSection.mapEmbedCode }} 
+                className="h-full w-full"
+              />
+            ) : (
+              <>
+                <Image 
+                  src="/placeholder.svg?height=800&width=1600" 
+                  alt="Map location" 
+                  fill 
+                  className="object-cover" 
+                  priority
+                />
+                <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                  <div className="bg-black/80 p-6 rounded-lg max-w-md backdrop-blur-sm border border-gray-700">
+                    <h3 className="text-xl font-bold mb-2">
+                      {mapSection.locationName || "Empirelink Limo Headquarters"}
+                    </h3>
+                    <p className="text-gray-300 mb-4 whitespace-pre-line">
+                      {contactDetails.address}
+                    </p>
+                    <Button asChild className="bg-gold hover:bg-gold-light text-black">
+                      <a 
+                        href={mapSection.buttonUrl || "https://maps.google.com"} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2"
+                      >
+                        <MapPin className="h-4 w-4" />
+                        {mapSection.buttonText || "Get Directions"}
+                      </a>
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </section>
    </div>
  )
 }

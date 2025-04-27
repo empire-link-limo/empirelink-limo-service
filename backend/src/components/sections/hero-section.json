@@ -2,7 +2,7 @@
   "collectionName": "components_sections_hero_sections",
   "info": {
     "displayName": "Home Hero Section",
-    "description": ""
+    "description": "Hero section with support for separate mobile and desktop backgrounds"
   },
   "options": {},
   "attributes": {
@@ -19,10 +19,19 @@
       "required": false,
       "allowedTypes": [
         "images",
-        "files",
-        "videos",
-        "audios"
-      ]
+        "videos"
+      ],
+      "description": "Mobile background (portrait orientation)"
+    },
+    "desktopBackgroundImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "videos"
+      ],
+      "description": "Desktop background (landscape orientation)"
     },
     "primaryButtonText": {
       "type": "string"

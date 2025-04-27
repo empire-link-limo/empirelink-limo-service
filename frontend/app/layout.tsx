@@ -5,8 +5,10 @@ import { Inter, Playfair_Display } from "next/font/google"
 import "./globals.css"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
+import { FloatingActionButtons } from "@/components/FloatingActionButtons"
 import { ThemeProvider } from "@/components/theme-provider"
 import GoogleAnalytics from "@/components/google-analytics"
+import { getGlobalData } from "@/lib/strapi"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -25,11 +27,17 @@ export const metadata: Metadata = {
   generator: 'v0.dev'
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  // Fetch global data from Strapi
+  const globalData = await getGlobalData().catch(error => {
+    console.error("Failed to fetch global data:", error);
+    return undefined;
+  });
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -38,9 +46,10 @@ export default function RootLayout({
       <body className={`${inter.variable} ${playfair.variable} font-sans bg-black text-gray-100`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
           <div className="flex min-h-screen flex-col">
-            <Header />
+            <Header global={globalData} />
             <main className="flex-1">{children}</main>
-            <Footer />
+            <Footer global={globalData} />
+            <FloatingActionButtons global={globalData} />
           </div>
         </ThemeProvider>
       </body>
