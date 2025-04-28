@@ -18,7 +18,7 @@ export async function generateStaticParams() {
 }
 
 export default async function ServiceDetail({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+  const { slug } = await params;
   const service = await getService(slug);
   
   if (!service) {

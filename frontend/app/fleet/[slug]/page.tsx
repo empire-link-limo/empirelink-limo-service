@@ -18,7 +18,7 @@ export async function generateStaticParams() {
 }
 
 export default async function VehicleDetail({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+  const { slug } = await params;
   const vehicle = await getVehicle(slug);
   
   if (!vehicle) {

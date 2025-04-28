@@ -174,48 +174,19 @@ export async function getAllPosts(pageSize: number = 10, page: number = 1): Prom
 
 export async function getPostBySlug(slug: string): Promise<BlogPostData | null> {
   try {
-    console.log(`--- Fetching post with slug: "${slug}" ---`);
-    
-    // Double check slug format
     if (!slug || typeof slug !== 'string') {
       console.error(`Invalid slug provided: ${slug}`);
       return null;
     }
     
-    // Try with both potential API formats to determine which one works
-    let data;
-    
-    try {
-      console.log("Attempting with /api/blog-posts endpoint");
-      data = await fetchAPI("/blog-posts", {
-        filters: {
-          slug: {
-            $eq: slug,
-          },
+    const data = await fetchAPI("/blog-posts", {
+      filters: {
+        slug: {
+          $eq: slug,
         },
-        populate: "*", // Use full population for debugging
-      });
-    } catch (error) {
-      console.error("First attempt failed, trying alternative endpoint");
-      
-      try {
-        // Try without /api prefix in case the fetchAPI function already adds it
-        data = await fetchAPI("blog-posts", {
-          filters: {
-            slug: {
-              $eq: slug,
-            },
-          },
-          populate: "*",
-        });
-      } catch (secondError) {
-        console.error("Both endpoint attempts failed");
-        throw secondError;
-      }
-    }
-    
-    // Log full response for debugging
-    console.log("Full Strapi response:", JSON.stringify(data, null, 2));
+      },
+      populate: "*", // Use full population for debugging
+    });
     
     if (!data || !data.data || data.data.length === 0) {
       console.log(`No post found with slug: ${slug}`);
