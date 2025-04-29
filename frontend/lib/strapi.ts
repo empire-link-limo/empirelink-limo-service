@@ -77,9 +77,7 @@ export async function getAllVehicles(): Promise<VehicleData[]> {
 export async function getFeaturedVehicles(limit: number = 5): Promise<VehicleData[]> {
   const vehiclesRes = await fetchAPI("/vehicles", {
     filters: {
-      featured: {
-        $eq: true,
-      },
+      featured: true,
     },
     populate: ["image", "features", "gallery"],
     sort: "name:asc",
@@ -93,9 +91,7 @@ export async function getFeaturedVehicles(limit: number = 5): Promise<VehicleDat
 export async function getVehicle(slug: string): Promise<VehicleData | null> {
   const vehiclesRes = await fetchAPI("/vehicles", {
     filters: {
-      slug: {
-        $eq: slug,
-      },
+      slug:  slug,
     },
     populate: ["image", "features", "gallery", "seo.metaImage"],
   });
@@ -116,9 +112,7 @@ export async function getAllServices(): Promise<ServiceData[]> {
 export async function getFeaturedServices(limit: number = 3): Promise<ServiceData[]> {
   const servicesRes = await fetchAPI("/services", {
     filters: {
-      featured: {
-        $eq: true,
-      },
+      featured: true,
     },
     populate: ["image", "features"],
     sort: "title:asc",
@@ -132,9 +126,7 @@ export async function getFeaturedServices(limit: number = 3): Promise<ServiceDat
 export async function getService(slug: string): Promise<ServiceData | null> {
   const servicesRes = await fetchAPI("/services", {
     filters: {
-      slug: {
-        $eq: slug,
-      },
+      slug: slug,
     },
     populate: ["image", "features", "seo.metaImage"],
   });
@@ -181,9 +173,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPostData | null> 
     
     const data = await fetchAPI("/blog-posts", {
       filters: {
-        slug: {
-          $eq: slug,
-        },
+        slug: slug,
       },
       populate: "*", // Use full population for debugging
     });
