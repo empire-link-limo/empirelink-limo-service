@@ -15,22 +15,6 @@ type GoogleAnalyticsProps = {
  * - Supports GA4
  */
 export default function GoogleAnalytics({ id }: GoogleAnalyticsProps) {
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
-
-  useEffect(() => {
-    // Only run if GA ID exists and we're in the browser
-    if (!id || typeof window === 'undefined') return
-
-    // Track page views when the route changes in SPA navigation
-    const url = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : '')
-    
-    // Send pageview with the new URL
-    window.gtag?.('config', id, {
-      page_path: url,
-    })
-  }, [id, pathname, searchParams])
-
   // Don't render anything if ID is missing
   if (!id) return null
   
@@ -53,6 +37,33 @@ export default function GoogleAnalytics({ id }: GoogleAnalyticsProps) {
           });
         `}
       </Script>
+      
+      {/* Page view tracker - separated to its own component */}
+      <PageViewTracker id={id} />
     </>
   )
+}
+
+/**
+ * Separate component for tracking page views
+ * This allows the hooks to be isolated in their own component
+ */
+function PageViewTracker({ id }: { id: string }) {
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    // Only run if GA ID exists and we're in the browser
+    if (!id || typeof window === 'undefined') return
+
+    // Track page views when the route changes in SPA navigation
+    const url = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : '')
+    
+    // Send pageview with the new URL
+    window.gtag?.('config', id, {
+      page_path: url,
+    })
+  }, [id, pathname, searchParams])
+
+  return null
 }

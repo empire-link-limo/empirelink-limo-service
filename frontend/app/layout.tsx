@@ -10,6 +10,7 @@ import { FloatingActionButtons } from "@/components/FloatingActionButtons"
 import { ThemeProvider } from "@/components/theme-provider"
 import GoogleAnalytics from "@/components/google-analytics"
 import { getGlobalData } from "@/lib/strapi"
+import { Suspense } from "react"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -42,8 +43,10 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Note: Google Analytics remains on the client side */}
-        <GoogleAnalytics id={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID} />
+        {/* Note: Google Analytics is now wrapped in Suspense */}
+        <Suspense fallback={null}>
+          <GoogleAnalytics id={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID} />
+        </Suspense>
       </head>
       <body className={`${inter.variable} ${playfair.variable} font-sans bg-black text-gray-100`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
