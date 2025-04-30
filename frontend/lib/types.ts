@@ -379,6 +379,7 @@ export interface ClientAnimationProps {
   children: React.ReactNode;
   index?: number;
   animation?: "fade" | "scale" | "slide";
+  className?: string;
 }
 
 export interface HeaderClientProps {

@@ -94,7 +94,7 @@ export default async function Home() {
                 "/placeholder.svg?height=600&width=800"
               
               return (
-                <div key={vehicle.id} className="flex-none w-80 vehicle-card">
+                <div key={vehicle.id} className="flex-none w-80 vehicle-card h-full">
                   <div className="bg-gray-900 rounded-lg overflow-hidden shadow-lg border border-gray-800 flex flex-col h-full">
                     <div className="relative h-48 bg-black/20">
                       <Image
@@ -107,8 +107,7 @@ export default async function Home() {
                     <div className="p-6 flex flex-col flex-grow">
                       <h3 className="text-xl font-bold mb-2">{vehicle.name}</h3>
                       <p className="text-gold mb-2">{vehicle.capacity}</p>
-                      <p className="text-gray-400 mb-4">{vehicle.description}</p>
-                      <div className="flex-grow"></div>
+                      <p className="text-gray-400 mb-4 flex-grow">{vehicle.description}</p>
                       <Button asChild variant="outline" className="w-full border-gold text-gold hover:bg-gold/10 mt-auto">
                         <Link href={`/fleet/${vehicle.slug}`}>View Details</Link>
                       </Button>
@@ -117,7 +116,7 @@ export default async function Home() {
                 </div>
               )
             }) : [1, 2, 3, 4, 5].map((placeholder) => (
-              <div key={placeholder} className="flex-none w-80 vehicle-card">
+              <div key={placeholder} className="flex-none w-80 vehicle-card h-full">
                 <div className="bg-gray-900 rounded-lg overflow-hidden shadow-lg border border-gray-800 flex flex-col h-full">
                   <div className="relative h-48 bg-black/20">
                     <Image
@@ -130,8 +129,7 @@ export default async function Home() {
                   <div className="p-6 flex flex-col flex-grow">
                     <h3 className="text-xl font-bold mb-2">Luxury Vehicle</h3>
                     <p className="text-gold mb-2">3-6 passengers</p>
-                    <p className="text-gray-400 mb-4">Premium transportation experience</p>
-                    <div className="flex-grow"></div>
+                    <p className="text-gray-400 mb-4 flex-grow">Premium transportation experience</p>
                     <Button asChild variant="outline" className="w-full border-gold text-gold hover:bg-gold/10 mt-auto">
                       <Link href="/fleet">View Details</Link>
                     </Button>
@@ -149,7 +147,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Services Section - Just animations in client component */}
+      // Services Section - Just animations in client component
       <section className="py-20 bg-black">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -170,14 +168,14 @@ export default async function Home() {
               if (iconName === "Shield") IconComponent = Shield
               
               return (
-                <ClientAnimation key={service.id} index={index}>
-                  <div className="bg-gray-900 p-8 rounded-lg border border-gray-800 text-center">
+                <ClientAnimation key={service.id} index={index} className="h-full">
+                  <div className="bg-gray-900 p-8 rounded-lg border border-gray-800 text-center h-full flex flex-col">
                     <div className="flex justify-center mb-6">
                       <IconComponent className="h-10 w-10 text-gold" />
                     </div>
                     <h3 className="text-xl font-bold mb-4">{service.title}</h3>
-                    <p className="text-gray-400 mb-6">{service.description}</p>
-                    <Button asChild variant="link" className="text-gold">
+                    <p className="text-gray-400 mb-6 flex-grow">{service.description}</p>
+                    <Button asChild variant="link" className="text-gold mt-auto">
                       <Link href={`/services/${service.slug}`}>
                         Learn More <ChevronRight className="h-4 w-4 ml-1" />
                       </Link>
@@ -202,14 +200,14 @@ export default async function Home() {
                 icon: Shield,
               },
             ].map((service, index) => (
-              <ClientAnimation key={index} index={index}>
-                <div className="bg-gray-900 p-8 rounded-lg border border-gray-800 text-center">
+              <ClientAnimation key={index} index={index} className="h-full">
+                <div className="bg-gray-900 p-8 rounded-lg border border-gray-800 text-center h-full flex flex-col">
                   <div className="flex justify-center mb-6">
                     <service.icon className="h-10 w-10 text-gold" />
                   </div>
                   <h3 className="text-xl font-bold mb-4">{service.title}</h3>
-                  <p className="text-gray-400 mb-6">{service.description}</p>
-                  <Button asChild variant="link" className="text-gold">
+                  <p className="text-gray-400 mb-6 flex-grow">{service.description}</p>
+                  <Button asChild variant="link" className="text-gold mt-auto">
                     <Link href={`/services#${service.title.toLowerCase().replace(/\s+/g, "-")}`}>
                       Learn More <ChevronRight className="h-4 w-4 ml-1" />
                     </Link>
@@ -237,8 +235,8 @@ export default async function Home() {
                 "/placeholder.svg?height=100&width=100"
               
               return (
-                <ClientAnimation key={testimonial.id} index={index} animation="scale">
-                  <div className="bg-gray-900 p-8 rounded-lg border border-gray-800 relative">
+                <ClientAnimation key={testimonial.id} index={index} animation="scale" className="h-full">
+                  <div className="bg-gray-900 p-8 rounded-lg border border-gray-800 relative h-full flex flex-col">
                     <div className="flex justify-center mb-6">
                       <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-gold">
                         <Image
@@ -254,8 +252,8 @@ export default async function Home() {
                         <Star key={i} className="h-5 w-5 fill-current" />
                       ))}
                     </div>
-                    <p className="text-gray-300 italic mb-6">"{testimonial.quote}"</p>
-                    <div className="text-center">
+                    <p className="text-gray-300 italic mb-6 flex-grow">"{testimonial.quote}"</p>
+                    <div className="text-center mt-auto">
                       <h4 className="font-bold">{testimonial.name}</h4>
                       <p className="text-gray-400 text-sm">{testimonial.company}</p>
                     </div>
@@ -282,8 +280,8 @@ export default async function Home() {
                 image: "/placeholder.svg?height=100&width=100",
               },
             ].map((testimonial, index) => (
-              <ClientAnimation key={index} index={index} animation="scale">
-                <div className="bg-gray-900 p-8 rounded-lg border border-gray-800 relative">
+              <ClientAnimation key={index} index={index} animation="scale" className="h-full">
+                <div className="bg-gray-900 p-8 rounded-lg border border-gray-800 relative h-full flex flex-col">
                   <div className="flex justify-center mb-6">
                     <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-gold">
                       <Image
@@ -299,8 +297,8 @@ export default async function Home() {
                       <Star key={i} className="h-5 w-5 fill-current" />
                     ))}
                   </div>
-                  <p className="text-gray-300 italic mb-6">"{testimonial.quote}"</p>
-                  <div className="text-center">
+                  <p className="text-gray-300 italic mb-6 flex-grow">"{testimonial.quote}"</p>
+                  <div className="text-center mt-auto">
                     <h4 className="font-bold">{testimonial.name}</h4>
                     <p className="text-gray-400 text-sm">{testimonial.company}</p>
                   </div>

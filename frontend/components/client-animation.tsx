@@ -3,7 +3,7 @@
 import { motion } from "framer-motion"
 import { ClientAnimationProps } from "@/lib/types"
 
-export function ClientAnimation({ children, index = 0, animation = "fade" }: ClientAnimationProps) {
+export function ClientAnimation({ children, index = 0, animation = "fade", className = "" }: ClientAnimationProps) {
   // Animation variants based on the type
   const getAnimationProps = () => {
     switch (animation) {
@@ -31,6 +31,7 @@ export function ClientAnimation({ children, index = 0, animation = "fade" }: Cli
 
   return (
     <motion.div
+      className={className}
       viewport={{ once: true }}
       {...getAnimationProps()}
     >

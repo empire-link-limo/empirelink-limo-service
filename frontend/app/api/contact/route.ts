@@ -2,21 +2,51 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 
-// Define the expected form data structure - keep original imports if needed
+// Extended form data type to include the reCAPTCHA token
 type ContactFormData = {
   name: string;
   email: string;
   phone?: string;
   company?: string;
   message: string;
-  notificationEmail?: string; // Keep this to maintain compatibility
+  notificationEmail?: string;
+  recaptchaToken: string; // Added for reCAPTCHA
 };
+
+// Function to verify reCAPTCHA token
+async function verifyRecaptcha(token: string): Promise<boolean> {
+  try {
+    const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+    
+    if (!secretKey) {
+      console.error('RECAPTCHA_SECRET_KEY is not defined');
+      return false;
+    }
+    
+    const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: `secret=${secretKey}&response=${token}`,
+    });
+    
+    const data = await response.json();
+    return data.success === true;
+  } catch (error) {
+    console.error('reCAPTCHA verification error:', error);
+    return false;
+  }
+}
 
 // POST handler for the contact form
 export async function POST(request: Request) {
   try {
     // Parse the request body
     const data: ContactFormData = await request.json();
+    
+    // Debug logging
+    console.log('Form submission received with fields:', Object.keys(data));
     
     // Validate required fields
     if (!data.name || !data.email || !data.message) {
@@ -25,6 +55,27 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+    
+    // Validate reCAPTCHA token
+    if (!data.recaptchaToken) {
+      return NextResponse.json(
+        { error: 'CAPTCHA verification is required' },
+        { status: 400 }
+      );
+    }
+    
+    // Verify the reCAPTCHA token
+    const isValidCaptcha = await verifyRecaptcha(data.recaptchaToken);
+    
+    if (!isValidCaptcha) {
+      return NextResponse.json(
+        { error: 'CAPTCHA verification failed' },
+        { status: 400 }
+      );
+    }
+
+    // Log successful verification
+    console.log('reCAPTCHA verification successful');
 
     // Configure email transport
     const transporter = nodemailer.createTransport({
@@ -37,9 +88,10 @@ export async function POST(request: Request) {
       },
     });
     
-    // IMPORTANT CHANGE: Always use the environment variable for recipient
-    // This is the key fix for your email routing issue
+    // Continue to use the environment variable for the recipient
+    // This maintains our fix from before
     const toEmail = process.env.DEFAULT_CONTACT_EMAIL || 'contact@empirelinklimo.com';
+    console.log('Sending email to:', toEmail);
 
     // Email content
     const mailOptions = {

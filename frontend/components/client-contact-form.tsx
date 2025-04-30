@@ -1,34 +1,35 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react" // Added useRef for reCAPTCHA
 import { motion } from "framer-motion"
 import { Send, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useForm } from "react-hook-form"
+import ReCAPTCHA from "react-google-recaptcha" // Added reCAPTCHA import
 
-// Keep the original interface to maintain compatibility with existing code
+// Keep the original interface
 interface ClientContactFormProps {
   formTitle: string;
   successMessage?: string;
-  notificationEmail?: string; // Keep this to maintain compatibility
+  notificationEmail?: string;
 }
 
-// Keep the original FormData type
+// Keep the original FormData type with added recaptchaToken
 type FormData = {
   name: string;
   email: string;
   phone: string;
   company: string;
   message: string;
-  notificationEmail?: string; // Keep this to maintain compatibility
+  notificationEmail?: string;
 }
 
 export function ClientContactForm({
   formTitle,
   successMessage = "Thank you for contacting us. A member of our team will get back to you shortly.",
-  notificationEmail // Keep receiving this prop for compatibility
+  notificationEmail
 }: ClientContactFormProps) {
   const {
     register,
@@ -40,16 +41,29 @@ export function ClientContactForm({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [error, setError] = useState("")
+  const [captchaValue, setCaptchaValue] = useState<string | null>(null) // Added for reCAPTCHA
+  const recaptchaRef = useRef<ReCAPTCHA>(null) // Added for reCAPTCHA
   
   const onSubmit = async (data: FormData) => {
+    // Verify reCAPTCHA completion
+    if (!captchaValue) {
+      setError("Please complete the CAPTCHA verification")
+      return
+    }
+    
     setIsSubmitting(true)
     setError("")
     
     try {
-      // We're keeping this for compatibility, but it won't affect where emails go
-      // because we've fixed the API route to ignore this value
+      // If we have a notification email, add it to the form data
       if (notificationEmail) {
         data.notificationEmail = notificationEmail;
+      }
+      
+      // Add reCAPTCHA token to the request
+      const requestData = {
+        ...data,
+        recaptchaToken: captchaValue
       }
       
       const response = await fetch('/api/contact', {
@@ -57,19 +71,38 @@ export function ClientContactForm({
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(requestData),
       })
       
       if (!response.ok) {
-        throw new Error('Failed to submit form')
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to submit form');
       }
       
       reset()
       setIsSubmitted(true)
+      
+      // Reset the reCAPTCHA
+      if (recaptchaRef.current) {
+        recaptchaRef.current.reset()
+      }
+      setCaptchaValue(null)
     } catch (error) {
-      setError("There was a problem submitting your form. Please try again.")
+      if (error instanceof Error) {
+        setError(error.message)
+      } else {
+        setError("There was a problem submitting your form. Please try again.")
+      }
     } finally {
       setIsSubmitting(false)
+    }
+  }
+  
+  // reCAPTCHA change handler
+  const handleCaptchaChange = (value: string | null) => {
+    setCaptchaValue(value)
+    if (value) {
+      setError("")
     }
   }
 
@@ -171,11 +204,21 @@ export function ClientContactForm({
             />
             {errors.message && <p className="text-red-500 text-sm mt-1">{errors.message.message}</p>}
           </div>
+          
+          {/* reCAPTCHA component */}
+          <div className="mt-6">
+            <ReCAPTCHA
+              ref={recaptchaRef}
+              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "YOUR_RECAPTCHA_SITE_KEY"}
+              onChange={handleCaptchaChange}
+              theme="dark"
+            />
+          </div>
 
           <Button
             type="submit"
             className="bg-gold hover:bg-gold-light text-black w-full"
-            disabled={isSubmitting}
+            disabled={isSubmitting || !captchaValue}
           >
             {isSubmitting ? (
               <>
