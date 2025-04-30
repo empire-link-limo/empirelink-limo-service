@@ -47,7 +47,7 @@ export default async function RootLayout({
       </head>
       <body className={`${inter.variable} ${playfair.variable} font-sans bg-black text-gray-100`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
-          {/* <SplashScreen /> */}
+          <SplashScreen />
           <div className="flex min-h-screen flex-col">
             <Header global={globalData} />
             <main className="flex-1">{children}</main>

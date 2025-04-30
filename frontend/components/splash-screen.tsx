@@ -16,8 +16,8 @@ export function SplashScreen() {
   const isHomePage = pathname === "/"
 
   // Set different timings based on page
-  const splashDuration = isHomePage ? 6000 : 3000
-  const exitAnimationDuration = 1500 // Time needed for exit animations to complete
+  const splashDuration = isHomePage ? 3500 : 2000
+  const exitAnimationDuration = 1000 // Reduced from 1500 to 1000
 
   // Start exit animation sequence
   const startExitSequence = () => {
@@ -84,9 +84,9 @@ export function SplashScreen() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
               transition={{
-                duration: 0.8,
+                duration: 0.5, // was 0.8
                 ease: "easeOut",
-                exit: { delay: isExiting ? 0.9 : 0 },
+                exit: { delay: isExiting ? 0.5 : 0 }, // was 0.9
               }}
               className="mb-8"
             >
@@ -107,9 +107,9 @@ export function SplashScreen() {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 20, opacity: 0 }}
               transition={{
-                delay: 0.3,
-                duration: 0.8,
-                exit: { delay: isExiting ? 0.6 : 0 },
+                delay: 0.2, // was 0.3
+                duration: 0.5, // was 0.8
+                exit: { delay: isExiting ? 0.4 : 0 }, // was 0.6
               }}
               className="text-center"
             >
@@ -121,9 +121,9 @@ export function SplashScreen() {
                 animate={{ width: "100%" }}
                 exit={{ width: 0 }}
                 transition={{
-                  delay: 0.6,
-                  duration: 0.8,
-                  exit: { delay: isExiting ? 0.3 : 0 },
+                  delay: 0.4, // was 0.6
+                  duration: 0.5, // was 0.8
+                  exit: { delay: isExiting ? 0.2 : 0 }, // was 0.3
                 }}
                 className="h-0.5 bg-gold mx-auto mb-4"
               />
@@ -132,8 +132,8 @@ export function SplashScreen() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{
-                  delay: 0.9,
-                  duration: 0.8,
+                  delay: 0.5, // was 0.9
+                  duration: 0.5, // was 0.8
                   exit: { delay: isExiting ? 0 : 0 },
                 }}
                 className="text-gray-300"
@@ -148,9 +148,9 @@ export function SplashScreen() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{
-                delay: 1.2,
-                duration: 0.5,
-                exit: { duration: 0.3, delay: 0 },
+                delay: 0.7, // was 1.2
+                duration: 0.3, // was 0.5
+                exit: { duration: 0.2, delay: 0 }, // was 0.3
               }}
               className="mt-12"
             >
@@ -161,7 +161,7 @@ export function SplashScreen() {
                     animate={{ x: "100%" }}
                     transition={{
                       repeat: Number.POSITIVE_INFINITY,
-                      duration: isHomePage ? 2 : 1.3, // Faster animation for shorter display time
+                      duration: isHomePage ? 1.2 : 0.8, // was 2 : 1.3 // Faster animation for shorter display time
                       ease: "linear",
                     }}
                     className="h-full w-16 bg-gold absolute"
@@ -177,9 +177,9 @@ export function SplashScreen() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{
-                  delay: 1.5,
-                  duration: 0.5,
-                  exit: { duration: 0.3, delay: 0 },
+                  delay: 0.9, // was 1.5
+                  duration: 0.3, // was 0.5
+                  exit: { duration: 0.2, delay: 0 }, // was 0.3
                 }}
                 className="mt-4 text-sm text-gray-400"
               >
