@@ -1,55 +1,26 @@
-"use client"
-
-import { useRef, useEffect, useState } from "react"
+// app/page.tsx - Server Component
 import Image from "next/image"
 import Link from "next/link"
-import { motion } from "framer-motion"
-import { ChevronRight, ChevronLeft, Star, Award, Shield, Clock } from "lucide-react"
+import { ChevronRight, Award, Shield, Clock, Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { getStrapiMedia } from "@/lib/api"
 import { getHomepage, getFeaturedVehicles, getFeaturedServices, getTestimonials } from "@/lib/strapi"
 import Seo from "@/components/seo"
-import { HomepageData, VehicleData, ServiceData, TestimonialData } from "@/lib/types"
+import { ClientHero } from "@/components/client-hero"
+import { ClientScroller } from "@/components/client-scroller"
+import { ClientAnimation } from "@/components/client-animation"
 
-export default function Home() {
-  const [homepage, setHomepage] = useState<HomepageData | null>(null)
-  const [featuredVehicles, setFeaturedVehicles] = useState<VehicleData[]>([])
-  const [featuredServices, setFeaturedServices] = useState<ServiceData[]>([])
-  const [testimonials, setTestimonials] = useState<TestimonialData[]>([])
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
+export default async function Home() {
+  // Server-side data fetching
+  const homepage = await getHomepage();
+  const featuredVehicles = await getFeaturedVehicles(5);
+  const featuredServices = await getFeaturedServices(3);
+  const testimonials = await getTestimonials();
   
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const homepageData = await getHomepage()
-        const vehiclesData = await getFeaturedVehicles(5) // Get up to 5 featured vehicles
-        const servicesData = await getFeaturedServices(3) // Get up to 3 featured services
-        const testimonialsData = await getTestimonials()
-        
-        setHomepage(homepageData)
-        setFeaturedVehicles(vehiclesData)
-        setFeaturedServices(servicesData)
-        setTestimonials(testimonialsData)
-      } catch (error) {
-        console.error("Error fetching homepage data:", error)
-      }
-    }
-    
-    fetchData()
-  }, [])
-  
-  const scroll = (direction: "left" | "right") => {
-    if (scrollContainerRef.current) {
-      const { current } = scrollContainerRef
-      const scrollAmount = direction === "left" ? -current.offsetWidth : current.offsetWidth
-      current.scrollBy({ left: scrollAmount, behavior: "smooth" })
-    }
-  }
-
-  // Default values if data is still loading
+  // Default values if data is unavailable
   const heroData = homepage?.HeroSection || {
-    title: "<span class='gold-gradient'>Elevate</span> Your Corporate Travel",
-    subtitle: "Premium limousine and chauffeur services for discerning corporate clients",
+    title: "",
+    subtitle: "",
     primaryButtonText: "Book Now",
     primaryButtonUrl: "/booking",
     secondaryButtonText: "Explore Fleet",
@@ -80,15 +51,6 @@ export default function Home() {
     secondaryButtonUrl: "/contact",
     backgroundImage: null
   }
-  
-  // Get image URLs
-  const heroImageUrl = homepage?.HeroSection?.backgroundImage ?
-    getStrapiMedia(homepage.HeroSection.backgroundImage) : 
-    "/placeholder.svg?height=1080&width=1920"
-    
-  const ctaImageUrl = ctaSection?.backgroundImage ?
-    getStrapiMedia(ctaSection.backgroundImage) : 
-    "/placeholder.svg?height=800&width=1600"
 
   return (
     <div className="flex flex-col">
@@ -101,110 +63,19 @@ export default function Home() {
         }} />
       )}
       
-      {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          {heroData.backgroundImage?.url && (
-            <>
-              {heroData.backgroundImage.mime?.startsWith('video/') ? (
-                <>
-                  {/* Mobile Video (hidden on desktop) */}
-                  <video
-                    src={getStrapiMedia(heroData.backgroundImage)}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    className="object-cover w-full h-full md:hidden"
-                  />
-                  
-                  {/* Desktop Video (hidden on mobile) */}
-                  {heroData.desktopBackgroundImage?.url && heroData.desktopBackgroundImage.mime?.startsWith('video/') ? (
-                    <video
-                      src={getStrapiMedia(heroData.desktopBackgroundImage)}
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                      className="hidden md:block object-cover w-full h-full"
-                    />
-                  ) : (
-                    // If no desktop video, use the mobile video but with different object-fit settings
-                    <video
-                      src={getStrapiMedia(heroData.backgroundImage)}
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                      className="hidden md:block object-cover w-full h-full"
-                    />
-                  )}
-                </>
-              ) : (
-                <>
-                  {/* Mobile Image (hidden on desktop) */}
-                  <Image
-                    src={getStrapiMedia(heroData.backgroundImage) || "/placeholder.svg?height=1080&width=1920"}
-                    alt="Luxury limousine"
-                    fill
-                    className="object-cover md:hidden"
-                    priority
-                  />
-                  
-                  {/* Desktop Image (hidden on mobile) */}
-                  {heroData.desktopBackgroundImage?.url ? (
-                    <Image
-                      src={getStrapiMedia(heroData.desktopBackgroundImage) || "/placeholder.svg?height=1080&width=1920"}
-                      alt="Luxury limousine"
-                      fill
-                      className="hidden md:block object-cover"
-                      priority
-                    />
-                  ) : (
-                    // If no desktop image, use the mobile image
-                    <Image
-                      src={getStrapiMedia(heroData.backgroundImage) || "/placeholder.svg?height=1080&width=1920"}
-                      alt="Luxury limousine"
-                      fill
-                      className="hidden md:block object-cover"
-                      priority
-                    />
-                  )}
-                </>
-              )}
-              {/* Dark gradient overlay for better text visibility */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/60 to-black/80"></div>
-            </>
-          )}
-        </div>
-        <div className="container mx-auto px-4 z-10 text-center">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6">
-              <span dangerouslySetInnerHTML={{ __html: heroData.title }} />
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto mb-8">
-              {heroData.subtitle || heroData.description}
-            </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Button asChild size="lg" className="bg-gold hover:bg-gold-light text-black text-lg">
-                <Link href={heroData.primaryButtonUrl || "/booking"}>
-                  {heroData.primaryButtonText || "Book Now"}
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="border-white hover:bg-white/10 text-lg">
-                <Link href={heroData.secondaryButtonUrl || "/fleet"}>
-                  {heroData.secondaryButtonText || "Explore Fleet"}
-                </Link>
-              </Button>
-            </div>
-          </motion.div>
-        </div>
-        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <ChevronRight className="h-10 w-10 text-gold rotate-90" />
-        </div>
-      </section>
+      {/* Hero Section - Only animation wrapper is client component */}
+      <ClientHero
+        title={heroData.title}
+        subtitle={heroData.subtitle || heroData.description}
+        primaryButtonText={heroData.primaryButtonText}
+        primaryButtonUrl={heroData.primaryButtonUrl}
+        secondaryButtonText={heroData.secondaryButtonText}
+        secondaryButtonUrl={heroData.secondaryButtonUrl}
+        backgroundImage={heroData.backgroundImage}
+        desktopBackgroundImage={heroData.desktopBackgroundImage}
+      />
 
-      {/* Fleet Showcase */}
+      {/* Fleet Showcase - Server rendered content with client scroller */}
       <section className="py-20 bg-gradient-to-b from-black to-gray-900">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
@@ -215,88 +86,60 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="relative">
-            {/* Moved the buttons outside with negative positioning */}
-            <button
-              onClick={() => scroll("left")}
-              className="absolute left-[-40px] top-1/2 transform -translate-y-1/2 z-10 bg-black/50 hover:bg-black/80 p-2 rounded-full text-white"
-              aria-label="Scroll left"
-            >
-              <ChevronLeft className="h-6 w-6" />
-            </button>
-
-            <div ref={scrollContainerRef} className="flex overflow-x-auto gap-6 py-4 px-2 horizontal-scroll">
-              {featuredVehicles && featuredVehicles.length > 0 ? featuredVehicles.map((vehicle) => {
-                const imageUrl = vehicle.image ? 
-                  getStrapiMedia(vehicle.image) : 
-                  "/placeholder.svg?height=600&width=800"
-                
-                return (
-                  <motion.div
-                    key={vehicle.id}
-                    className="flex-none w-80 vehicle-card"
-                    whileHover={{ scale: 1.03 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  >
-                    <div className="bg-gray-900 rounded-lg overflow-hidden shadow-lg border border-gray-800 flex flex-col h-full">
-                      <div className="relative h-48 bg-black/20">
-                        <Image
-                          src={imageUrl || "/placeholder.svg?height=600&width=800"}
-                          alt={vehicle.name}
-                          fill
-                          className="object-contain"
-                        />
-                      </div>
-                      <div className="p-6 flex flex-col flex-grow">
-                        <h3 className="text-xl font-bold mb-2">{vehicle.name}</h3>
-                        <p className="text-gold mb-2">{vehicle.capacity}</p>
-                        <p className="text-gray-400 mb-4">{vehicle.description}</p>
-                        <div className="flex-grow"></div>
-                        <Button asChild variant="outline" className="w-full border-gold text-gold hover:bg-gold/10 mt-auto">
-                          <Link href={`/fleet/${vehicle.slug}`}>View Details</Link>
-                        </Button>
-                      </div>
-                    </div>
-                  </motion.div>
-                )
-              }) : [1, 2, 3, 4, 5].map((placeholder) => (
-                <motion.div
-                  key={placeholder}
-                  className="flex-none w-80 vehicle-card"
-                  whileHover={{ scale: 1.03 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                >
+          {/* Only the scrolling functionality is in a client component */}
+          <ClientScroller>
+            {featuredVehicles && featuredVehicles.length > 0 ? featuredVehicles.map((vehicle) => {
+              const imageUrl = vehicle.image ? 
+                getStrapiMedia(vehicle.image) : 
+                "/placeholder.svg?height=600&width=800"
+              
+              return (
+                <div key={vehicle.id} className="flex-none w-80 vehicle-card">
                   <div className="bg-gray-900 rounded-lg overflow-hidden shadow-lg border border-gray-800 flex flex-col h-full">
                     <div className="relative h-48 bg-black/20">
                       <Image
-                        src="/placeholder.svg?height=600&width=800"
-                        alt="Vehicle placeholder"
+                        src={imageUrl || "/placeholder.svg?height=600&width=800"}
+                        alt={vehicle.name}
                         fill
                         className="object-contain"
                       />
                     </div>
                     <div className="p-6 flex flex-col flex-grow">
-                      <h3 className="text-xl font-bold mb-2">Luxury Vehicle</h3>
-                      <p className="text-gold mb-2">3-6 passengers</p>
-                      <p className="text-gray-400 mb-4">Premium transportation experience</p>
+                      <h3 className="text-xl font-bold mb-2">{vehicle.name}</h3>
+                      <p className="text-gold mb-2">{vehicle.capacity}</p>
+                      <p className="text-gray-400 mb-4">{vehicle.description}</p>
                       <div className="flex-grow"></div>
                       <Button asChild variant="outline" className="w-full border-gold text-gold hover:bg-gold/10 mt-auto">
-                        <Link href="/fleet">View Details</Link>
+                        <Link href={`/fleet/${vehicle.slug}`}>View Details</Link>
                       </Button>
                     </div>
                   </div>
-                </motion.div>
-              ))}
-            </div>
-
-            <button
-              onClick={() => scroll("right")}
-              className="absolute right-[-40px] top-1/2 transform -translate-y-1/2 z-10 bg-black/50 hover:bg-black/80 p-2 rounded-full text-white"
-              aria-label="Scroll right"
-            >
-              <ChevronRight className="h-6 w-6" />
-            </button>
-          </div>
+                </div>
+              )
+            }) : [1, 2, 3, 4, 5].map((placeholder) => (
+              <div key={placeholder} className="flex-none w-80 vehicle-card">
+                <div className="bg-gray-900 rounded-lg overflow-hidden shadow-lg border border-gray-800 flex flex-col h-full">
+                  <div className="relative h-48 bg-black/20">
+                    <Image
+                      src="/placeholder.svg?height=600&width=800"
+                      alt="Vehicle placeholder"
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                  <div className="p-6 flex flex-col flex-grow">
+                    <h3 className="text-xl font-bold mb-2">Luxury Vehicle</h3>
+                    <p className="text-gold mb-2">3-6 passengers</p>
+                    <p className="text-gray-400 mb-4">Premium transportation experience</p>
+                    <div className="flex-grow"></div>
+                    <Button asChild variant="outline" className="w-full border-gold text-gold hover:bg-gold/10 mt-auto">
+                      <Link href="/fleet">View Details</Link>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </ClientScroller>
 
           <div className="text-center mt-10">
             <Button asChild className="bg-gold hover:bg-gold-light text-black">
@@ -306,7 +149,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Services Section */}
+      {/* Services Section - Just animations in client component */}
       <section className="py-20 bg-black">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -325,73 +168,60 @@ export default function Home() {
               
               if (iconName === "Clock") IconComponent = Clock
               if (iconName === "Shield") IconComponent = Shield
-              if (iconName === "Briefcase") IconComponent = Award
-              if (iconName === "Plane") IconComponent = Award
-              if (iconName === "Calendar") IconComponent = Clock
-              if (iconName === "MapPin") IconComponent = Shield
-              if (iconName === "Users") IconComponent = Award
               
               return (
-                <motion.div
-                  key={service.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                  className="bg-gray-900 p-8 rounded-lg border border-gray-800 text-center"
-                >
-                  <div className="flex justify-center mb-6">
-                    <IconComponent className="h-10 w-10 text-gold" />
+                <ClientAnimation key={service.id} index={index}>
+                  <div className="bg-gray-900 p-8 rounded-lg border border-gray-800 text-center">
+                    <div className="flex justify-center mb-6">
+                      <IconComponent className="h-10 w-10 text-gold" />
+                    </div>
+                    <h3 className="text-xl font-bold mb-4">{service.title}</h3>
+                    <p className="text-gray-400 mb-6">{service.description}</p>
+                    <Button asChild variant="link" className="text-gold">
+                      <Link href={`/services/${service.slug}`}>
+                        Learn More <ChevronRight className="h-4 w-4 ml-1" />
+                      </Link>
+                    </Button>
                   </div>
-                  <h3 className="text-xl font-bold mb-4">{service.title}</h3>
-                  <p className="text-gray-400 mb-6">{service.description}</p>
-                  <Button asChild variant="link" className="text-gold">
-                    <Link href={`/services/${service.slug}`}>
-                      Learn More <ChevronRight className="h-4 w-4 ml-1" />
-                    </Link>
-                  </Button>
-                </motion.div>
+                </ClientAnimation>
               )
             }) : [
               {
                 title: "Corporate Transportation",
                 description: "Reliable and punctual service for executives and teams",
-                icon: <Award className="h-10 w-10 text-gold" />,
+                icon: Award,
               },
               {
                 title: "Airport Transfers",
                 description: "Seamless airport pickup and drop-off service",
-                icon: <Clock className="h-10 w-10 text-gold" />,
+                icon: Clock,
               },
               {
                 title: "Event Transportation",
                 description: "Coordinated transportation for corporate events",
-                icon: <Shield className="h-10 w-10 text-gold" />,
+                icon: Shield,
               },
             ].map((service, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="bg-gray-900 p-8 rounded-lg border border-gray-800 text-center"
-              >
-                <div className="flex justify-center mb-6">{service.icon}</div>
-                <h3 className="text-xl font-bold mb-4">{service.title}</h3>
-                <p className="text-gray-400 mb-6">{service.description}</p>
-                <Button asChild variant="link" className="text-gold">
-                  <Link href={`/services#${service.title.toLowerCase().replace(/\s+/g, "-")}`}>
-                    Learn More <ChevronRight className="h-4 w-4 ml-1" />
-                  </Link>
-                </Button>
-              </motion.div>
+              <ClientAnimation key={index} index={index}>
+                <div className="bg-gray-900 p-8 rounded-lg border border-gray-800 text-center">
+                  <div className="flex justify-center mb-6">
+                    <service.icon className="h-10 w-10 text-gold" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-4">{service.title}</h3>
+                  <p className="text-gray-400 mb-6">{service.description}</p>
+                  <Button asChild variant="link" className="text-gold">
+                    <Link href={`/services#${service.title.toLowerCase().replace(/\s+/g, "-")}`}>
+                      Learn More <ChevronRight className="h-4 w-4 ml-1" />
+                    </Link>
+                  </Button>
+                </div>
+              </ClientAnimation>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Testimonials */}
+      {/* Testimonials - Server rendered with client animations */}
       <section className="py-20 bg-gradient-to-b from-gray-900 to-black">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -407,22 +237,61 @@ export default function Home() {
                 "/placeholder.svg?height=100&width=100"
               
               return (
-                <motion.div
-                  key={testimonial.id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                  className="bg-gray-900 p-8 rounded-lg border border-gray-800 relative"
-                >
+                <ClientAnimation key={testimonial.id} index={index} animation="scale">
+                  <div className="bg-gray-900 p-8 rounded-lg border border-gray-800 relative">
+                    <div className="flex justify-center mb-6">
+                      <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-gold">
+                        <Image
+                          src={imageUrl || "/placeholder.svg?height=100&width=100"}
+                          alt={testimonial.name}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    </div>
+                    <div className="text-gold flex justify-center mb-4">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="h-5 w-5 fill-current" />
+                      ))}
+                    </div>
+                    <p className="text-gray-300 italic mb-6">"{testimonial.quote}"</p>
+                    <div className="text-center">
+                      <h4 className="font-bold">{testimonial.name}</h4>
+                      <p className="text-gray-400 text-sm">{testimonial.company}</p>
+                    </div>
+                  </div>
+                </ClientAnimation>
+              )
+            }) : [
+              {
+                name: "Sarah Johnson",
+                company: "Global Enterprises",
+                quote: "The most reliable and luxurious transportation service we've used for our executives. Impeccable service every time.",
+                image: "/placeholder.svg?height=100&width=100",
+              },
+              {
+                name: "Michael Chen",
+                company: "Tech Innovations Inc.",
+                quote: "Our team relies on Luxury Limo for all our corporate transportation needs. Professional, punctual, and truly premium.",
+                image: "/placeholder.svg?height=100&width=100",
+              },
+              {
+                name: "Elizabeth Taylor",
+                company: "Financial Partners Group",
+                quote: "From airport pickups to event transportation, they consistently exceed our expectations with their attention to detail.",
+                image: "/placeholder.svg?height=100&width=100",
+              },
+            ].map((testimonial, index) => (
+              <ClientAnimation key={index} index={index} animation="scale">
+                <div className="bg-gray-900 p-8 rounded-lg border border-gray-800 relative">
                   <div className="flex justify-center mb-6">
                     <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-gold">
-                    <Image
-                      src={imageUrl || "/placeholder.svg?height=100&width=100"}
-                      alt={testimonial.name}
-                      fill
-                      className="object-cover"
-                    />
+                      <Image
+                        src={testimonial.image}
+                        alt={testimonial.name}
+                        fill
+                        className="object-cover"
+                      />
                     </div>
                   </div>
                   <div className="text-gold flex justify-center mb-4">
@@ -435,74 +304,22 @@ export default function Home() {
                     <h4 className="font-bold">{testimonial.name}</h4>
                     <p className="text-gray-400 text-sm">{testimonial.company}</p>
                   </div>
-                </motion.div>
-              )
-            }) : [
-              {
-                name: "Sarah Johnson",
-                company: "Global Enterprises",
-                quote:
-                  "The most reliable and luxurious transportation service we've used for our executives. Impeccable service every time.",
-                image: "/placeholder.svg?height=100&width=100",
-              },
-              {
-                name: "Michael Chen",
-                company: "Tech Innovations Inc.",
-                quote:
-                  "Our team relies on Luxury Limo for all our corporate transportation needs. Professional, punctual, and truly premium.",
-                image: "/placeholder.svg?height=100&width=100",
-              },
-              {
-                name: "Elizabeth Taylor",
-                company: "Financial Partners Group",
-                quote:
-                  "From airport pickups to event transportation, they consistently exceed our expectations with their attention to detail.",
-                image: "/placeholder.svg?height=100&width=100",
-              },
-            ].map((testimonial, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="bg-gray-900 p-8 rounded-lg border border-gray-800 relative"
-              >
-                <div className="flex justify-center mb-6">
-                  <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-gold">
-                    <Image
-                      src={testimonial.image}
-                      alt={testimonial.name}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
                 </div>
-                <div className="text-gold flex justify-center mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 fill-current" />
-                  ))}
-                </div>
-                <p className="text-gray-300 italic mb-6">"{testimonial.quote}"</p>
-                <div className="text-center">
-                  <h4 className="font-bold">{testimonial.name}</h4>
-                  <p className="text-gray-400 text-sm">{testimonial.company}</p>
-                </div>
-              </motion.div>
+              </ClientAnimation>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* CTA Section - Complete server component */}
       <section className="py-20 bg-black relative overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-20">
-        <Image 
-          src={ctaImageUrl || "/placeholder.svg?height=800&width=1600"} 
-          alt="Background" 
-          fill 
-          className="object-cover" 
-        />
+          <Image 
+            src={ctaSection.backgroundImage ? getStrapiMedia(ctaSection.backgroundImage) : "/placeholder.svg?height=800&width=1600"} 
+            alt="Background" 
+            fill 
+            className="object-cover" 
+          />
         </div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center">

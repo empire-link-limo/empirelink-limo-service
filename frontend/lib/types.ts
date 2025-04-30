@@ -356,3 +356,150 @@ export interface GlobalData {
   whatsappNumber?: string;
   socialLinks?: SocialLink[];
 }
+
+// New types for client components
+// These types help define props for our client components
+
+export interface ClientHeroProps {
+  title: string;
+  subtitle?: string;  // Make optional
+  primaryButtonText?: string;  // Make optional
+  primaryButtonUrl?: string;  // Make optional
+  secondaryButtonText?: string;  // Make optional
+  secondaryButtonUrl?: string;  // Make optional
+  backgroundImage?: any;  // Already optional
+  desktopBackgroundImage?: any;  // Already optional
+}
+
+export interface ClientScrollerProps {
+  children: React.ReactNode;
+}
+
+export interface ClientAnimationProps {
+  children: React.ReactNode;
+  index?: number;
+  animation?: "fade" | "scale" | "slide";
+}
+
+export interface HeaderClientProps {
+  logoUrl: string | null;
+  companyName: string;
+  navLinks: NavLink[];
+  phone?: string;
+}
+
+export interface NavLink {
+  href: string;
+  label: string;
+}
+
+export interface FooterClientProps {
+  services: ServiceData[];
+  companyName: string;
+  description: string;
+  phone: string;
+  email: string;
+  address: string;
+  logo: string | null;
+  footerText: string;
+  socialLinks: SocialLink[];
+}
+
+export interface CTASectionProps {
+  title: string;
+  description: string;
+  primaryButtonText: string;
+  primaryButtonUrl: string;
+  secondaryButtonText: string;
+  secondaryButtonUrl: string;
+  backgroundImageUrl: string;
+}
+
+export interface SeoProps {
+  seo: {
+    metaTitle?: string;
+    metaDescription?: string;
+    shareImage?: any;
+    metaRobots?: string;
+    keywords?: string;
+  };
+}
+
+export interface ClientAboutCTAProps {
+  title?: string;
+  description?: string;
+  primaryButtonText?: string;
+  primaryButtonUrl?: string;
+  secondaryButtonText?: string;
+  secondaryButtonUrl?: string;
+}
+
+export interface ClientBlogFiltersProps {
+  categories: CategoryData[];
+}
+
+export interface ClientBlogPostsProps {
+  posts: BlogPostData[];
+  featuredPost: BlogPostData | null | undefined;
+  categories: CategoryData[];
+  postsPerPage: number;
+  showFeaturedPost: boolean;
+}
+
+export interface ClientNewsletterProps {
+  title?: string;
+  description?: string;
+  buttonText?: string;
+}
+
+export interface ClientBookingContentProps {
+  bookingIframeURL?: string;
+  phone?: string;
+  email?: string;
+}
+
+export interface ClientContactFormProps {
+  formTitle: string;
+  successMessage?: string;
+  notificationEmail?: string;
+}
+
+export interface ClientContactInfoProps {
+  phone: string;
+  email: string;
+  address: string;
+  hours: string;
+  socialLinks: SocialLink[];
+}
+
+export type ContactFormData = {
+  name: string;
+  email: string;
+  phone: string;
+  company: string;
+  message: string;
+  notificationEmail?: string;
+}
+
+export interface ClientMapSectionProps {
+  mapEmbedCode?: string;
+  locationName?: string;
+  address: string;
+  buttonText?: string;
+  buttonUrl?: string;
+}
+
+export interface ClientVehicleGridProps {
+  vehicles: VehicleData[];
+}
+
+export interface ClientGalleryViewProps {
+  galleryImages: GalleryImageData[];
+  categories: string[];
+  gallerySettings: {
+    showCategories: boolean;
+    enableLightbox: boolean;
+    imagesPerRow: number;
+    maxImages?: number;
+  };
+}

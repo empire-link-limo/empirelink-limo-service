@@ -1,13 +1,17 @@
-// components/seo.jsx
-import Head from "next/head";
-import { getStrapiMedia } from "@/lib/api";
+"use client"
 
-const Seo = ({ seo }) => {
+import Head from "next/head"
+import { getStrapiMedia } from "@/lib/api"
+import { SeoProps } from "@/lib/types"
+
+export default function Seo({ seo }: SeoProps) {
   // Default values for SEO
   const defaults = {
     metaTitle: "Empirelink Limo Service | Premium Corporate Transportation",
     metaDescription: "Luxury limousine and chauffeur services for corporate clients. Experience elegance, reliability, and professionalism.",
     shareImage: null,
+    metaRobots: undefined,
+    keywords: undefined,
   };
 
   // Use defaults if no SEO data
@@ -16,7 +20,12 @@ const Seo = ({ seo }) => {
     ...seo,
   };
 
-  const imageUrl = getStrapiMedia(fullSeo.shareImage);
+  // Get image URL
+  const imageUrl = fullSeo.shareImage ? getStrapiMedia(fullSeo.shareImage) : null;
+  
+  // Default image size (if available)
+  const imageWidth = fullSeo.shareImage?.width || 1200;
+  const imageHeight = fullSeo.shareImage?.height || 630;
 
   return (
     <Head>
@@ -38,7 +47,14 @@ const Seo = ({ seo }) => {
       <meta property="og:description" content={fullSeo.metaDescription} />
       <meta property="og:type" content="website" />
       <meta property="og:url" content={typeof window !== "undefined" ? window.location.href : ''} />
-      {imageUrl && <meta property="og:image" content={imageUrl} />}
+      
+      {imageUrl && (
+        <>
+          <meta property="og:image" content={imageUrl} />
+          <meta property="og:image:width" content={imageWidth.toString()} />
+          <meta property="og:image:height" content={imageHeight.toString()} />
+        </>
+      )}
       
       {/* Twitter Card */}
       <meta name="twitter:card" content="summary_large_image" />
@@ -46,7 +62,5 @@ const Seo = ({ seo }) => {
       <meta name="twitter:description" content={fullSeo.metaDescription} />
       {imageUrl && <meta name="twitter:image" content={imageUrl} />}
     </Head>
-  );
-};
-
-export default Seo;
+  )
+}

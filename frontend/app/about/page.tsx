@@ -1,37 +1,20 @@
-"use client"
-
-import { useState, useEffect } from "react"
+// app/about/page.tsx - Server Component
 import Image from "next/image"
 import Link from "next/link"
-import { motion } from "framer-motion"
 import { Award, Clock, Shield, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { getAboutPage, getTeamMembers } from "@/lib/strapi"
 import { getStrapiMedia } from "@/lib/api"
 import Seo from "@/components/seo"
-import { AboutPageData, TeamMemberData } from "@/lib/types"
+import { ClientAnimation } from "@/components/client-animation"
+import { ClientAboutCTA } from "@/components/client-about-cta"
 
-export default function AboutPage() {
-  const [aboutPage, setAboutPage] = useState<AboutPageData | null>(null)
-  const [teamMembers, setTeamMembers] = useState<TeamMemberData[]>([])
+export default async function AboutPage() {
+  // Server-side data fetching
+  const aboutPage = await getAboutPage()
+  const teamMembers = await getTeamMembers()
   
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const aboutPageData = await getAboutPage()
-        const teamMembersData = await getTeamMembers()
-        
-        setAboutPage(aboutPageData)
-        setTeamMembers(teamMembersData)
-      } catch (error) {
-        console.error("Error fetching about page data:", error)
-      }
-    }
-    
-    fetchData()
-  }, [])
-  
-  // Default values if data is still loading
+  // Default values if data is unavailable
   const heroData = aboutPage?.HeroSection || {
     title: "About Luxury Limo",
     description: "Setting the standard for premium corporate transportation since 2005",
@@ -156,18 +139,15 @@ export default function AboutPage() {
           />
         </div>
         <div className="container mx-auto px-4 py-20 md:py-32 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="max-w-3xl"
-          >
-            <h1 className="text-3xl md:text-5xl font-bold mb-6">{heroData.title}</h1>
-            <div className="h-1 w-20 bg-gold mb-6"></div>
-            <p className="text-xl text-gray-300 mb-8">
-              {heroData.description}
-            </p>
-          </motion.div>
+          <ClientAnimation>
+            <div className="max-w-3xl">
+              <h1 className="text-3xl md:text-5xl font-bold mb-6">{heroData.title}</h1>
+              <div className="h-1 w-20 bg-gold mb-6"></div>
+              <p className="text-xl text-gray-300 mb-8">
+                {heroData.description}
+              </p>
+            </div>
+          </ClientAnimation>
         </div>
       </section>
 
@@ -175,37 +155,30 @@ export default function AboutPage() {
       <section className="py-20 bg-black">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl font-bold mb-6">{storyData.title}</h2>
-              <div className="h-1 w-20 bg-gold mb-6"></div>
-              <div className="text-gray-300 mb-6 space-y-4">
-                {storyData.content.split('\n\n').map((paragraph, idx) => (
-                  <p key={idx}>{paragraph}</p>
-                ))}
+            <ClientAnimation animation="slide">
+              <div>
+                <h2 className="text-3xl font-bold mb-6">{storyData.title}</h2>
+                <div className="h-1 w-20 bg-gold mb-6"></div>
+                <div className="text-gray-300 mb-6 space-y-4">
+                  {storyData.content.split('\n\n').map((paragraph, idx) => (
+                    <p key={idx}>{paragraph}</p>
+                  ))}
+                </div>
+                <Button asChild className="bg-gold hover:bg-gold-light text-black">
+                  <Link href="/services">Our Services</Link>
+                </Button>
               </div>
-              <Button asChild className="bg-gold hover:bg-gold-light text-black">
-                <Link href="/services">Our Services</Link>
-              </Button>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-              className="relative h-[400px] rounded-lg overflow-hidden"
-            >
-              <Image 
-                src={storyImageUrl || "/placeholder.svg?height=800&width=1600"} 
-                alt="Our story" 
-                fill 
-                className="object-cover" 
-              />
-            </motion.div>
+            </ClientAnimation>
+            <ClientAnimation animation="slide">
+              <div className="relative h-[400px] rounded-lg overflow-hidden">
+                <Image 
+                  src={storyImageUrl || "/placeholder.svg?height=800&width=1600"} 
+                  alt="Our story" 
+                  fill 
+                  className="object-cover" 
+                />
+              </div>
+            </ClientAnimation>
           </div>
         </div>
       </section>
@@ -213,140 +186,46 @@ export default function AboutPage() {
       {/* Our Values */}
       <section className="py-20 bg-gradient-to-b from-black to-gray-900">
         <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl font-bold mb-4">{valuesData.title}</h2>
-            <div className="h-1 w-20 bg-gold mx-auto mb-6"></div>
-            <p className="text-gray-300 max-w-2xl mx-auto">{valuesData.description}</p>
-          </motion.div>
+          <ClientAnimation>
+            <div className="text-center mb-16">
+              <h2 className="text-3xl font-bold mb-4">{valuesData.title}</h2>
+              <div className="h-1 w-20 bg-gold mx-auto mb-6"></div>
+              <p className="text-gray-300 max-w-2xl mx-auto">{valuesData.description}</p>
+            </div>
+          </ClientAnimation>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {valueItems.map((value, index) => (
-              <motion.div
-                key={value.id || index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="bg-gray-900 p-8 rounded-lg border border-gray-800 text-center"
-              >
-                <div className="flex justify-center mb-6">
-                  {getIconComponent(value.icon)}
+              <ClientAnimation key={value.id || index} index={index}>
+                <div className="bg-gray-900 p-8 rounded-lg border border-gray-800 text-center">
+                  <div className="flex justify-center mb-6">
+                    {getIconComponent(value.icon)}
+                  </div>
+                  <h3 className="text-xl font-bold mb-4">{value.title}</h3>
+                  <p className="text-gray-400">{value.description}</p>
                 </div>
-                <h3 className="text-xl font-bold mb-4">{value.title}</h3>
-                <p className="text-gray-400">{value.description}</p>
-              </motion.div>
+              </ClientAnimation>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Our Team */}
-      {/* <section className="py-20 bg-gray-900">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl font-bold mb-4">{teamData.title}</h2>
-            <div className="h-1 w-20 bg-gold mx-auto mb-6"></div>
-            <p className="text-gray-300 max-w-2xl mx-auto">{teamData.description}</p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {teamMembers && teamMembers.length > 0 ? teamMembers.map((member, index) => {
-              const imageUrl = member.image ? 
-                getStrapiMedia(member.image) : 
-                "/placeholder.svg?height=400&width=400"
-              
-              return (
-                <motion.div
-                  key={member.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                  className="bg-black p-6 rounded-lg border border-gray-800"
-                >
-                  <div className="relative h-80 mb-6 rounded-lg overflow-hidden">
-                    <Image src={imageUrl || "/placeholder.svg?height=800&width=1600"} alt={member.name} fill className="object-cover" />
-                  </div>
-                  <h3 className="text-xl font-bold mb-2">{member.name}</h3>
-                  <p className="text-gold mb-4">{member.position}</p>
-                  <p className="text-gray-400">{member.bio}</p>
-                </motion.div>
-              )
-            }) : [
-              {
-                name: "Jonathan Reynolds",
-                position: "Founder & CEO",
-                image: "/placeholder.svg?height=400&width=400",
-                bio: "With over 20 years in the luxury transportation industry, Jonathan founded Luxury Limo with a vision to redefine corporate travel.",
-              },
-              {
-                name: "Alexandra Chen",
-                position: "Operations Director",
-                image: "/placeholder.svg?height=400&width=400",
-                bio: "Alexandra ensures that every aspect of our service runs smoothly, from fleet management to chauffeur coordination.",
-              },
-              {
-                name: "Michael Thompson",
-                position: "Client Relations Manager",
-                image: "/placeholder.svg?height=400&width=400",
-                bio: "Michael works closely with our corporate clients to understand their needs and provide tailored transportation solutions.",
-              },
-            ].map((member, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="bg-black p-6 rounded-lg border border-gray-800"
-              >
-                <div className="relative h-80 mb-6 rounded-lg overflow-hidden">
-                  <Image src={member.image} alt={member.name} fill className="object-cover" />
-                </div>
-                <h3 className="text-xl font-bold mb-2">{member.name}</h3>
-                <p className="text-gold mb-4">{member.position}</p>
-                <p className="text-gray-400">{member.bio}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section> */}
+      {/* Our Team - Commented out as in the original */}
+      {/* Team section commented out */}
 
       {/* CTA Section */}
       <section className="py-20 bg-black">
         <div className="container mx-auto px-4">
           <div className="bg-gray-900 rounded-lg border border-gray-800 p-8 md:p-12">
             <div className="grid md:grid-cols-2 gap-8 items-center">
-              <div>
-                <h2 className="text-2xl md:text-3xl font-bold mb-4">{ctaData.title}</h2>
-                <p className="text-gray-300 mb-6">
-                  {ctaData.description}
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Button asChild className="bg-gold hover:bg-gold-light text-black">
-                    <Link href={ctaData.primaryButtonUrl || "/booking"}>
-                      {ctaData.primaryButtonText || "Book Now"}
-                    </Link>
-                  </Button>
-                  <Button asChild variant="outline" className="border-white hover:bg-white/10">
-                    <Link href={ctaData.secondaryButtonUrl || "/contact"}>
-                      {ctaData.secondaryButtonText || "Contact Us"}
-                    </Link>
-                  </Button>
-                </div>
-              </div>
+              <ClientAboutCTA
+                title={ctaData.title}
+                description={ctaData.description}
+                primaryButtonText={ctaData.primaryButtonText}
+                primaryButtonUrl={ctaData.primaryButtonUrl}
+                secondaryButtonText={ctaData.secondaryButtonText}
+                secondaryButtonUrl={ctaData.secondaryButtonUrl}
+              />
               <div className="relative h-64 rounded-lg overflow-hidden">
                 <Image
                   src={ctaImageUrl || "/placeholder.svg?height=800&width=1600"}
