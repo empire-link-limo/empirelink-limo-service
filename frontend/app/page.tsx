@@ -147,7 +147,7 @@ export default async function Home() {
         </div>
       </section>
 
-      // Services Section - Just animations in client component
+      {/* Services Section - Just animations in client component */}
       <section className="py-20 bg-black">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
