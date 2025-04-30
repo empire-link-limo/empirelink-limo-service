@@ -475,8 +475,8 @@ export interface ClientContactInfoProps {
 export type ContactFormData = {
   name: string;
   email: string;
-  phone: string;
-  company: string;
+  phone?: string;
+  company?: string;
   message: string;
   notificationEmail?: string;
 }
@@ -502,4 +502,24 @@ export interface ClientGalleryViewProps {
     imagesPerRow: number;
     maxImages?: number;
   };
+}
+
+export interface ClientServicesListProps {
+  services: ServiceData[];
+}
+
+export interface ClientWhyChooseUsProps {
+  title: string;
+  description?: string;
+  benefits: BenefitItem[];
+}
+
+export interface ClientCTASectionProps {
+  title: string;
+  description?: string;
+  primaryButtonText?: string;
+  primaryButtonUrl?: string;
+  secondaryButtonText?: string;
+  secondaryButtonUrl?: string;
+  imageUrl: string;
 }
