@@ -1,7 +1,16 @@
 // app/api/contact/route.ts
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
-import { ContactFormData } from "@/lib/types"
+
+// Define the expected form data structure - keep original imports if needed
+type ContactFormData = {
+  name: string;
+  email: string;
+  phone?: string;
+  company?: string;
+  message: string;
+  notificationEmail?: string; // Keep this to maintain compatibility
+};
 
 // POST handler for the contact form
 export async function POST(request: Request) {
@@ -28,12 +37,13 @@ export async function POST(request: Request) {
       },
     });
     
-    // Set recipient email (use the one from form data or default to env)
-    const toEmail = data.notificationEmail || process.env.DEFAULT_CONTACT_EMAIL || 'info@yourwebsite.com';
+    // IMPORTANT CHANGE: Always use the environment variable for recipient
+    // This is the key fix for your email routing issue
+    const toEmail = process.env.DEFAULT_CONTACT_EMAIL || 'contact@empirelinklimo.com';
 
     // Email content
     const mailOptions = {
-      from: process.env.EMAIL_FROM || 'website@yourwebsite.com',
+      from: process.env.EMAIL_FROM || 'empirelinklimousine@gmail.com',
       to: toEmail,
       subject: `New Contact Form Submission from ${data.name}`,
       html: `

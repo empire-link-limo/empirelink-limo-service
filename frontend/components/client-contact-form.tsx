@@ -8,26 +8,27 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useForm } from "react-hook-form"
 
+// Keep the original interface to maintain compatibility with existing code
 interface ClientContactFormProps {
   formTitle: string;
   successMessage?: string;
-  notificationEmail?: string;
+  notificationEmail?: string; // Keep this to maintain compatibility
 }
 
-// Update FormData to include notificationEmail
+// Keep the original FormData type
 type FormData = {
   name: string;
   email: string;
   phone: string;
   company: string;
   message: string;
-  notificationEmail?: string; // Make this property optional
+  notificationEmail?: string; // Keep this to maintain compatibility
 }
 
 export function ClientContactForm({
   formTitle,
   successMessage = "Thank you for contacting us. A member of our team will get back to you shortly.",
-  notificationEmail
+  notificationEmail // Keep receiving this prop for compatibility
 }: ClientContactFormProps) {
   const {
     register,
@@ -45,7 +46,8 @@ export function ClientContactForm({
     setError("")
     
     try {
-      // If we have a notification email, add it to the form data
+      // We're keeping this for compatibility, but it won't affect where emails go
+      // because we've fixed the API route to ignore this value
       if (notificationEmail) {
         data.notificationEmail = notificationEmail;
       }

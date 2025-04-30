@@ -478,8 +478,7 @@ export type ContactFormData = {
   phone?: string;
   company?: string;
   message: string;
-  notificationEmail?: string;
-}
+};
 
 export interface ClientMapSectionProps {
   mapEmbedCode?: string;

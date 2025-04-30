@@ -91,11 +91,10 @@ export default async function ContactPage() {
               socialLinks={socialLinks}
             />
 
-            {/* Contact Form */}
+            {/* Contact Form - Simplified props */}
             <ClientContactForm 
               formTitle={formSection.title}
               successMessage={formSection.successMessage}
-              notificationEmail={formSection.notificationEmail}
             />
           </div>
         </div>
