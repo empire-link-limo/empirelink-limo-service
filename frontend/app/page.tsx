@@ -175,11 +175,13 @@ export default async function Home() {
                     </div>
                     <h3 className="text-xl font-bold mb-4">{service.title}</h3>
                     <p className="text-gray-400 mb-6 flex-grow">{service.description}</p>
-                    <Button asChild variant="link" className="text-gold mt-auto">
-                      <Link href={`/services/${service.slug}`}>
-                        Discover {service.title} Services <ChevronRight className="h-4 w-4 ml-1" aria-hidden="true" />
-                      </Link>
-                    </Button>
+                    <div className="mt-auto w-full">
+                      <Button asChild variant="link" className="text-gold">
+                        <Link href={`/services/${service.slug}`} className="flex items-center justify-center">
+                          <span className="whitespace-nowrap">Discover {service.title} Services</span> <ChevronRight className="h-4 w-4 ml-1 flex-shrink-0" aria-hidden="true" />
+                        </Link>
+                      </Button>
+                    </div>
                   </div>
                 </ClientAnimation>
               )
@@ -207,11 +209,13 @@ export default async function Home() {
                   </div>
                   <h3 className="text-xl font-bold mb-4">{service.title}</h3>
                   <p className="text-gray-400 mb-6 flex-grow">{service.description}</p>
-                  <Button asChild variant="link" className="text-gold mt-auto">
-                    <Link href={`/services#${service.title.toLowerCase().replace(/\s+/g, "-")}`}>
-                      Explore Our {service.title} <ChevronRight className="h-4 w-4 ml-1" aria-hidden="true" />
-                    </Link>
-                  </Button>
+                  <div className="mt-auto w-full">
+                    <Button asChild variant="link" className="text-gold">
+                      <Link href={`/services#${service.title.toLowerCase().replace(/\s+/g, "-")}`} className="flex items-center justify-center">
+                        <span className="whitespace-nowrap">Explore Our {service.title}</span> <ChevronRight className="h-4 w-4 ml-1 flex-shrink-0" aria-hidden="true" />
+                      </Link>
+                    </Button>
+                  </div>
                 </div>
               </ClientAnimation>
             ))}
