@@ -76,10 +76,10 @@ export default async function Home() {
       />
 
       {/* Fleet Showcase - Server rendered content with client scroller */}
-      <section className="py-20 bg-gradient-to-b from-black to-gray-900">
+      <section className="py-20 bg-gradient-to-b from-black to-gray-900" aria-labelledby="fleet-section-title">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">{fleetSection.title}</h2>
+            <h2 id="fleet-section-title" className="text-3xl md:text-4xl font-bold mb-4">{fleetSection.title}</h2>
             <div className="h-1 w-20 bg-gold mx-auto mb-6"></div>
             <p className="text-gray-300 max-w-2xl mx-auto">
               {fleetSection.description}
@@ -99,7 +99,7 @@ export default async function Home() {
                     <div className="relative h-48 bg-black/20">
                       <Image
                         src={imageUrl || "/placeholder.svg?height=600&width=800"}
-                        alt={vehicle.name}
+                        alt={`${vehicle.name} luxury vehicle`}
                         fill
                         className="object-contain"
                       />
@@ -109,7 +109,7 @@ export default async function Home() {
                       <p className="text-gold mb-2">{vehicle.capacity}</p>
                       <p className="text-gray-400 mb-4 flex-grow">{vehicle.description}</p>
                       <Button asChild variant="outline" className="w-full border-gold text-gold hover:bg-gold/10 mt-auto">
-                        <Link href={`/fleet/${vehicle.slug}`}>View Details</Link>
+                        <Link href={`/fleet/${vehicle.slug}`}>View Details of {vehicle.name}</Link>
                       </Button>
                     </div>
                   </div>
@@ -131,7 +131,7 @@ export default async function Home() {
                     <p className="text-gold mb-2">3-6 passengers</p>
                     <p className="text-gray-400 mb-4 flex-grow">Premium transportation experience</p>
                     <Button asChild variant="outline" className="w-full border-gold text-gold hover:bg-gold/10 mt-auto">
-                      <Link href="/fleet">View Details</Link>
+                      <Link href="/fleet">Explore Our Fleet Options</Link>
                     </Button>
                   </div>
                 </div>
@@ -141,17 +141,17 @@ export default async function Home() {
 
           <div className="text-center mt-10">
             <Button asChild className="bg-gold hover:bg-gold-light text-black">
-              <Link href="/fleet">View All Vehicles</Link>
+              <Link href="/fleet">View Our Complete Luxury Fleet</Link>
             </Button>
           </div>
         </div>
       </section>
 
       {/* Services Section - Just animations in client component */}
-      <section className="py-20 bg-black">
+      <section className="py-20 bg-black" aria-labelledby="services-section-title">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">{servicesSection.title}</h2>
+            <h2 id="services-section-title" className="text-3xl md:text-4xl font-bold mb-4">{servicesSection.title}</h2>
             <div className="h-1 w-20 bg-gold mx-auto mb-6"></div>
             <p className="text-gray-300 max-w-2xl mx-auto">
               {servicesSection.description}
@@ -171,13 +171,13 @@ export default async function Home() {
                 <ClientAnimation key={service.id} index={index} className="h-full">
                   <div className="bg-gray-900 p-8 rounded-lg border border-gray-800 text-center h-full flex flex-col">
                     <div className="flex justify-center mb-6">
-                      <IconComponent className="h-10 w-10 text-gold" />
+                      <IconComponent className="h-10 w-10 text-gold" aria-hidden="true" />
                     </div>
                     <h3 className="text-xl font-bold mb-4">{service.title}</h3>
                     <p className="text-gray-400 mb-6 flex-grow">{service.description}</p>
                     <Button asChild variant="link" className="text-gold mt-auto">
                       <Link href={`/services/${service.slug}`}>
-                        Learn More <ChevronRight className="h-4 w-4 ml-1" />
+                        Discover {service.title} Services <ChevronRight className="h-4 w-4 ml-1" aria-hidden="true" />
                       </Link>
                     </Button>
                   </div>
@@ -203,13 +203,13 @@ export default async function Home() {
               <ClientAnimation key={index} index={index} className="h-full">
                 <div className="bg-gray-900 p-8 rounded-lg border border-gray-800 text-center h-full flex flex-col">
                   <div className="flex justify-center mb-6">
-                    <service.icon className="h-10 w-10 text-gold" />
+                    <service.icon className="h-10 w-10 text-gold" aria-hidden="true" />
                   </div>
                   <h3 className="text-xl font-bold mb-4">{service.title}</h3>
                   <p className="text-gray-400 mb-6 flex-grow">{service.description}</p>
                   <Button asChild variant="link" className="text-gold mt-auto">
                     <Link href={`/services#${service.title.toLowerCase().replace(/\s+/g, "-")}`}>
-                      Learn More <ChevronRight className="h-4 w-4 ml-1" />
+                      Explore Our {service.title} <ChevronRight className="h-4 w-4 ml-1" aria-hidden="true" />
                     </Link>
                   </Button>
                 </div>
@@ -220,10 +220,10 @@ export default async function Home() {
       </section>
 
       {/* Testimonials - Server rendered with client animations */}
-      <section className="py-20 bg-gradient-to-b from-gray-900 to-black">
+      <section className="py-20 bg-gradient-to-b from-gray-900 to-black" aria-labelledby="testimonials-section-title">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">{testimonialsSection.title}</h2>
+            <h2 id="testimonials-section-title" className="text-3xl md:text-4xl font-bold mb-4">{testimonialsSection.title}</h2>
             <div className="h-1 w-20 bg-gold mx-auto mb-6"></div>
             <p className="text-gray-300 max-w-2xl mx-auto">{testimonialsSection.description}</p>
           </div>
@@ -241,15 +241,15 @@ export default async function Home() {
                       <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-gold">
                         <Image
                           src={imageUrl || "/placeholder.svg?height=100&width=100"}
-                          alt={testimonial.name}
+                          alt={`${testimonial.name} from ${testimonial.company}`}
                           fill
                           className="object-cover"
                         />
                       </div>
                     </div>
-                    <div className="text-gold flex justify-center mb-4">
+                    <div className="text-gold flex justify-center mb-4" aria-label="5 star rating">
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="h-5 w-5 fill-current" />
+                        <Star key={i} className="h-5 w-5 fill-current" aria-hidden="true" />
                       ))}
                     </div>
                     <p className="text-gray-300 italic mb-6 flex-grow">"{testimonial.quote}"</p>
@@ -286,15 +286,15 @@ export default async function Home() {
                     <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-gold">
                       <Image
                         src={testimonial.image}
-                        alt={testimonial.name}
+                        alt={`${testimonial.name} from ${testimonial.company}`}
                         fill
                         className="object-cover"
                       />
                     </div>
                   </div>
-                  <div className="text-gold flex justify-center mb-4">
+                  <div className="text-gold flex justify-center mb-4" aria-label="5 star rating">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 fill-current" />
+                      <Star key={i} className="h-5 w-5 fill-current" aria-hidden="true" />
                     ))}
                   </div>
                   <p className="text-gray-300 italic mb-6 flex-grow">"{testimonial.quote}"</p>
@@ -310,18 +310,19 @@ export default async function Home() {
       </section>
 
       {/* CTA Section - Complete server component */}
-      <section className="py-20 bg-black relative overflow-hidden">
+      <section className="py-20 bg-black relative overflow-hidden" aria-labelledby="cta-section-title">
         <div className="absolute inset-0 z-0 opacity-20">
           <Image 
             src={ctaSection.backgroundImage ? getStrapiMedia(ctaSection.backgroundImage) : "/placeholder.svg?height=800&width=1600"} 
-            alt="Background" 
+            alt="" 
             fill 
             className="object-cover" 
+            role="presentation"
           />
         </div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            <h2 id="cta-section-title" className="text-3xl md:text-4xl font-bold mb-6">
               {ctaSection.title}
             </h2>
             <p className="text-xl text-gray-300 mb-8">
