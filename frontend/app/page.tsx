@@ -247,7 +247,7 @@ export default async function Home() {
                         />
                       </div>
                     </div>
-                    <div className="text-gold flex justify-center mb-4" aria-label="5 star rating">
+                    <div className="text-gold flex justify-center mb-4">
                       {[...Array(5)].map((_, i) => (
                         <Star key={i} className="h-5 w-5 fill-current" aria-hidden="true" />
                       ))}
@@ -292,7 +292,7 @@ export default async function Home() {
                       />
                     </div>
                   </div>
-                  <div className="text-gold flex justify-center mb-4" aria-label="5 star rating">
+                  <div className="text-gold flex justify-center mb-4">
                     {[...Array(5)].map((_, i) => (
                       <Star key={i} className="h-5 w-5 fill-current" aria-hidden="true" />
                     ))}
