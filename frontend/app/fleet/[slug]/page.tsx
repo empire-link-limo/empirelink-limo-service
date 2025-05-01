@@ -54,12 +54,12 @@ export default async function VehicleDetail({ params }: { params: { slug: string
         
         <div className="grid md:grid-cols-2 gap-12">
           <div>
-            <div className="relative aspect-[4/3] rounded-lg overflow-hidden mb-6">
+            <div className="relative aspect-[4/3] rounded-lg overflow-hidden mb-6 bg-gray-900/50">
               <Image
                 src={imageUrl}
                 alt={vehicle.name}
                 fill
-                className="object-cover"
+                className="object-contain"
                 priority
               />
             </div>
@@ -67,12 +67,12 @@ export default async function VehicleDetail({ params }: { params: { slug: string
             {galleryImages.length > 0 && (
               <div className="grid grid-cols-3 gap-3">
                 {galleryImages.map((img) => (
-                  <div key={img.id} className="relative aspect-square rounded overflow-hidden">
+                  <div key={img.id} className="relative aspect-square rounded overflow-hidden bg-gray-900/50">
                     <Image
                       src={img.url}
                       alt={`${vehicle.name} view`}
                       fill
-                      className="object-cover hover:scale-110 transition-transform duration-300"
+                      className="object-contain hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                 ))}

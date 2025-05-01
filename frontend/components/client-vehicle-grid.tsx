@@ -81,12 +81,12 @@ export function ClientVehicleGrid({ vehicles }: ClientVehicleGridProps) {
                       View Details
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="sm:max-w-[700px] bg-gray-900 border-gray-800">
+                  <DialogContent className="sm:max-w-[700px] bg-gray-900 border-gray-800 max-h-[90vh] overflow-hidden flex flex-col">
                     <DialogHeader>
                       <DialogTitle className="text-2xl font-bold">{selectedVehicle?.name}</DialogTitle>
                       <DialogDescription className="text-gray-400">{selectedVehicle?.description}</DialogDescription>
                     </DialogHeader>
-                    <div className="mt-4">
+                    <div className="mt-4 overflow-y-auto pr-2">
                       <div className="relative h-80 mb-4 bg-black/20 rounded-lg">
                         <Image
                           src={selectedImage || "/placeholder.svg"}
@@ -151,6 +151,7 @@ export function ClientVehicleGrid({ vehicles }: ClientVehicleGridProps) {
                           </p>
                         </div>
                       </div>
+                      <div className="h-4"></div>
                     </div>
                   </DialogContent>
                 </Dialog>
