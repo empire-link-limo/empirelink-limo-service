@@ -175,10 +175,10 @@ export default async function Home() {
                     </div>
                     <h3 className="text-xl font-bold mb-4">{service.title}</h3>
                     <p className="text-gray-400 mb-6 flex-grow">{service.description}</p>
-                    <div className="mt-auto w-full">
-                      <Button asChild variant="link" className="text-gold">
-                        <Link href={`/services/${service.slug}`} className="flex items-center justify-center">
-                          <span className="whitespace-nowrap">Discover {service.title} Services</span> <ChevronRight className="h-4 w-4 ml-1 flex-shrink-0" aria-hidden="true" />
+                    <div className="mt-auto w-full overflow-hidden">
+                      <Button asChild variant="link" className="text-gold w-full px-0">
+                        <Link href={`/services/${service.slug}`} className="flex items-center justify-center w-full">
+                          <span className="truncate">Discover {service.title} Services</span> <ChevronRight className="h-4 w-4 ml-1 flex-shrink-0" aria-hidden="true" />
                         </Link>
                       </Button>
                     </div>
@@ -209,10 +209,10 @@ export default async function Home() {
                   </div>
                   <h3 className="text-xl font-bold mb-4">{service.title}</h3>
                   <p className="text-gray-400 mb-6 flex-grow">{service.description}</p>
-                  <div className="mt-auto w-full">
-                    <Button asChild variant="link" className="text-gold">
-                      <Link href={`/services#${service.title.toLowerCase().replace(/\s+/g, "-")}`} className="flex items-center justify-center">
-                        <span className="whitespace-nowrap">Explore Our {service.title}</span> <ChevronRight className="h-4 w-4 ml-1 flex-shrink-0" aria-hidden="true" />
+                  <div className="mt-auto w-full overflow-hidden">
+                    <Button asChild variant="link" className="text-gold w-full px-0">
+                      <Link href={`/services#${service.title.toLowerCase().replace(/\s+/g, "-")}`} className="flex items-center justify-center w-full">
+                        <span className="truncate">Explore Our {service.title}</span> <ChevronRight className="h-4 w-4 ml-1 flex-shrink-0" aria-hidden="true" />
                       </Link>
                     </Button>
                   </div>
