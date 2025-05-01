@@ -31,7 +31,7 @@ export function ClientAnimation({ children, index = 0, animation = "fade", class
 
   return (
     <motion.div
-      className={className}
+      className={`w-full ${className}`}
       viewport={{ once: true }}
       {...getAnimationProps()}
     >

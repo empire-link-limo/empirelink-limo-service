@@ -158,7 +158,7 @@ export default async function Home() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-2">
             {featuredServices && featuredServices.length > 0 ? featuredServices.map((service, index) => {
               // Get icon based on service.icon or fallback to defaults
               const iconName = service.icon || ["Award", "Clock", "Shield"][index % 3]
