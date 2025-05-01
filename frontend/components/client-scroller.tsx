@@ -16,10 +16,10 @@ export function ClientScroller({ children }: ClientScrollerProps) {
   }
 
   return (
-    <div className="relative">
+    <div className="relative overflow-hidden">
       <button
         onClick={() => scroll("left")}
-        className="absolute left-[-40px] top-1/2 transform -translate-y-1/2 z-10 bg-black/50 hover:bg-black/80 p-2 rounded-full text-white"
+        className="absolute left-0 md:left-[-40px] top-1/2 transform -translate-y-1/2 z-10 bg-black/50 hover:bg-black/80 p-2 rounded-full text-white"
         aria-label="Scroll left"
       >
         <ChevronLeft className="h-6 w-6" />
@@ -31,7 +31,7 @@ export function ClientScroller({ children }: ClientScrollerProps) {
 
       <button
         onClick={() => scroll("right")}
-        className="absolute right-[-40px] top-1/2 transform -translate-y-1/2 z-10 bg-black/50 hover:bg-black/80 p-2 rounded-full text-white"
+        className="absolute right-0 md:right-[-40px] top-1/2 transform -translate-y-1/2 z-10 bg-black/50 hover:bg-black/80 p-2 rounded-full text-white"
         aria-label="Scroll right"
       >
         <ChevronRight className="h-6 w-6" />
