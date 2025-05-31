@@ -200,8 +200,14 @@ import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
+import { getStrapiMedia } from "@/lib/api"
+import { GlobalData } from "@/lib/types"
 
-export function SplashScreen() {
+interface SplashScreenProps {
+  global?: GlobalData;
+}
+
+export function SplashScreen({ global }: SplashScreenProps) {
   const [isVisible, setIsVisible] = useState(true)
   const [isExiting, setIsExiting] = useState(false)
   const [hasInitialized, setHasInitialized] = useState(false)
@@ -211,6 +217,10 @@ export function SplashScreen() {
   const isHomePage = pathname === "/"
   const splashDuration = isHomePage ? 2000 : 1500 // Home: 2s, Others: 1.5s
   const exitAnimationDuration = 700 // Reduced from 1000ms
+
+  // Get the logo URL from Strapi
+  const logoUrl = global?.logo ? getStrapiMedia(global.logo) : null
+  const companyName = global?.companyName || "Empire Link"
 
   const startExitSequence = () => {
     setIsExiting(true)
@@ -273,12 +283,20 @@ export function SplashScreen() {
               className="mb-6" // Reduced from mb-8
             >
               <div className="relative h-20 w-20 md:h-28 md:w-28"> {/* Slightly smaller */}
-                <Image
-                  src="/empire-link-limousine-logo.webp"
-                  alt="Logo"
-                  fill
-                  className="object-contain"
-                />
+                {logoUrl ? (
+                  <Image
+                    src={logoUrl}
+                    alt={`${companyName} Logo`}
+                    fill
+                    className="object-contain"
+                  />
+                ) : (
+                  <div className="flex items-center justify-center h-full w-full">
+                    <span className="text-2xl md:text-3xl font-playfair font-bold gold-gradient">
+                      {companyName.charAt(0)}
+                    </span>
+                  </div>
+                )}
               </div>
             </motion.div>
 
@@ -295,7 +313,7 @@ export function SplashScreen() {
               className="text-center"
             >
               <h1 className="text-3xl md:text-4xl font-playfair font-bold mb-1"> {/* Smaller */}
-                <span className="gold-gradient">Empire Link</span> Limo
+                <span className="gold-gradient">{companyName}</span> Limo
               </h1>
               <motion.div
                 initial={{ width: 0 }}

@@ -202,7 +202,7 @@ export function FooterClient({
         <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-500 text-sm">
           <p dangerouslySetInnerHTML={{ __html: footerText }} />
           <div className="mt-2 space-x-4">
-            <span>Created with ❤️ by{" "}
+            <span>Website created by{" "}
               <Link href="https://bilal1203.github.io/" className="hover:text-gold transition-colors">
                 Ahmad Bilal
               </Link>
