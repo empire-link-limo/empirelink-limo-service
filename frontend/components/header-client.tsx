@@ -34,14 +34,14 @@ export function HeaderClient({ logoUrl, companyName, navLinks, phone }: HeaderCl
         {/* Logo with fixed width */}
         <Link href="/" className="flex items-center flex-shrink-0">
           {logoUrl ? (
-            <div className="h-16 flex items-center w-48 flex-shrink-0">
+            <div className="h-20 flex items-center w-56 flex-shrink-0">
               <Image 
                 src={logoUrl} 
                 alt={companyName || "Company Logo"} 
-                width={200}
-                height={80}
+                width={240}
+                height={96}
                 priority
-                className="max-h-16 w-auto object-contain"
+                className="max-h-20 w-auto object-contain"
               />
             </div>
           ) : (

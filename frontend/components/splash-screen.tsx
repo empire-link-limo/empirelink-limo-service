@@ -313,7 +313,7 @@ export function SplashScreen({ global }: SplashScreenProps) {
               className="text-center"
             >
               <h1 className="text-3xl md:text-4xl font-playfair font-bold mb-1"> {/* Smaller */}
-                <span className="gold-gradient">{companyName}</span> Limo
+                <span className="gold-gradient">Empire Link</span> Limousine
               </h1>
               <motion.div
                 initial={{ width: 0 }}

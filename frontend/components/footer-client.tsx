@@ -28,9 +28,9 @@ export function FooterClient({
                 <Image 
                   src={logo} 
                   alt={companyName} 
-                  width={200}
-                  height={80}
-                  className="max-h-16 w-auto object-contain"
+                  width={240}
+                  height={96}
+                  className="max-h-20 w-auto object-contain"
                 />
               </div>
             )}
