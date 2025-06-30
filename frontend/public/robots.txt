@@ -1,0 +1,29 @@
+# robots.txt - Place this in your frontend/public/ folder
+
+User-agent: *
+Allow: /
+
+# Block admin or sensitive areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /api/auth/
+
+# Allow important pages for limousine service
+Allow: /
+Allow: /about
+Allow: /services
+Allow: /services/*
+Allow: /fleet
+Allow: /fleet/*
+Allow: /gallery
+Allow: /booking
+Allow: /contact
+Allow: /blog
+Allow: /blog/*
+
+# Sitemap location
+Sitemap: https://www.empirelinklimo.com/sitemap.xml
+
+# Crawl delay for respectful crawling
+Crawl-delay: 1
