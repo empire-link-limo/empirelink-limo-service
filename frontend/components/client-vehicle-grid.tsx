@@ -1,3 +1,5 @@
+// frontend/components/client-vehicle-grid.tsx
+
 "use client"
 
 import { useState } from "react"
@@ -15,13 +17,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { getStrapiMedia } from "@/lib/api"
-import { VehicleData } from "@/lib/types"
+import { VehicleData, HeaderClientProps } from "@/lib/types"
 
 interface ClientVehicleGridProps {
   vehicles: VehicleData[];
+  phone: HeaderClientProps['phone'];
 }
 
-export function ClientVehicleGrid({ vehicles }: ClientVehicleGridProps) {
+export function ClientVehicleGrid({ vehicles, phone }: ClientVehicleGridProps) {
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleData | null>(null)
   const [selectedImage, setSelectedImage] = useState<string>("")
   
@@ -143,12 +146,14 @@ export function ClientVehicleGrid({ vehicles }: ClientVehicleGridProps) {
                           <Button asChild className="w-full bg-gold hover:bg-gold-light text-black">
                             <Link href="/booking">Book Now</Link>
                           </Button>
-                          <p className="text-sm text-gray-400 mt-4 text-center">
-                            Or call us at{" "}
-                            <a href="tel:+1234567890" className="text-gold hover:underline">
-                              +1 (234) 567-8900
-                            </a>
-                          </p>
+                          {phone && (
+                            <p className="text-sm text-gray-400 mt-4 text-center">
+                              Or call us at{" "}
+                              <a href={`tel:${phone}`} className="text-gold hover:underline">
+                                {phone}
+                              </a>
+                            </p>
+                          )}
                         </div>
                       </div>
                       <div className="h-4"></div>

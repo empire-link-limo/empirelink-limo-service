@@ -1,7 +1,7 @@
 // app/fleet/page.tsx - Server Component
 import Image from "next/image"
 import Link from "next/link"
-import { getFleetPage, getAllVehicles } from "@/lib/strapi"
+import { getFleetPage, getAllVehicles, getGlobalData } from "@/lib/strapi"
 import { getStrapiMedia } from "@/lib/api"
 import Seo from "@/components/seo"
 import { ClientVehicleGrid } from "@/components/client-vehicle-grid"
@@ -10,6 +10,7 @@ export default async function FleetPage() {
   // Server-side data fetching
   const fleetPage = await getFleetPage()
   const vehicles = await getAllVehicles()
+  const globalData = await getGlobalData() // Fetch global data for phone number
   
   // Default values if data is unavailable
   const heroData = fleetPage?.HeroSection || {
@@ -22,6 +23,9 @@ export default async function FleetPage() {
   const heroImageUrl = heroData?.backgroundImage ? 
     getStrapiMedia(heroData.backgroundImage) : 
     "/placeholder.svg?height=800&width=1600"
+
+  // Get phone from global data
+  const phone = globalData?.phone
 
   return (
     <div className="pt-20">
@@ -57,7 +61,7 @@ export default async function FleetPage() {
       
       {/* Fleet Grid - Client Component */}
       <div className="container mx-auto px-4 py-12">
-        <ClientVehicleGrid vehicles={vehicles} />
+        <ClientVehicleGrid vehicles={vehicles} phone={phone} />
       </div>
     </div>
   )
